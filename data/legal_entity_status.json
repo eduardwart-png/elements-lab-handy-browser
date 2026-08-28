@@ -1,0 +1,19 @@
+{
+  "status": "PRE_LAUNCH",
+  "note": "Keine realen polnischen Firmendaten vorhanden — nicht erfinden. Warten auf: Firmenname, Rechtsform, Adresse, KRS/Registerinfo, VAT-ID, EU-VAT, EORI.",
+  "target_jurisdiction": "Poland (planned)",
+  "eu_vat_registered": null,
+  "eori_number": null,
+  "krs_number": null,
+  "vat_id_pl": null,
+  "vat_id_de": null,
+  "legal_form": null,
+  "registered_address": null,
+  "external_legal_review_required": true,
+  "external_legal_contact": null,
+  "_meta": {
+    "schema_version": "v6",
+    "last_updated": "2026-08-29",
+    "blocker": "AWAITING_REAL_COMPANY_REGISTRATION_DATA"
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "_schema": {
+    "description": "Certificate of Analysis schema and batch release gate registry per SKU",
+    "version": "v6",
+    "release_gates": ["LEGAL_CHECK", "SUPPLIER_VERIFIED", "IMPORT_OK", "SDS_CLP_OK", "SAMPLE_RECEIVED", "LAB_TESTED", "LAB_PASS", "COA_UPLOADED", "PRODUCT_DATA_VERIFIED", "PRICE_APPROVED", "WEBSITE_RELEASED"]
+  },
+  "batches": [
+    {
+      "batch_id": "EL-BPC10-26001",
+      "sku_id": "bpc-157",
+      "compound": "BPC-157",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-TB510-26001",
+      "sku_id": "tb-500",
+      "compound": "TB-500",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-IPA10-26001",
+      "sku_id": "ipamorelin",
+      "compound": "Ipamorelin",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-KPV10-26001",
+      "sku_id": "kpv",
+      "compound": "KPV",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-SEL10-26001",
+      "sku_id": "selank",
+      "compound": "Selank",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-SMX10-26001",
+      "sku_id": "semax",
+      "compound": "Semax",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-MOT10-26001",
+      "sku_id": "mots-c-10",
+      "compound": "MOTS-C",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-MOT20-26001",
+      "sku_id": "mots-c-20",
+      "compound": "MOTS-C",
+      "concentration": "20 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-MOT40-26001",
+      "sku_id": "mots-c-40",
+      "compound": "MOTS-C",
+      "concentration": "40 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-CJC10-26001",
+      "sku_id": "cjc-1295-no-dac",
+      "compound": "CJC-1295 No DAC",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-AMQ10-26001",
+      "sku_id": "5-amino-1mq",
+      "compound": "5-Amino-1MQ",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-BT510-26001",
+      "sku_id": "bpc-157-tb-500",
+      "compound": "BPC-157 + TB-500",
+      "concentration": "10 mg + 10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    },
+    {
+      "batch_id": "EL-EPI10-26001",
+      "sku_id": "epithalon",
+      "compound": "Epithalon",
+      "concentration": "10 mg",
+      "result_status": "NOT_TESTED",
+      "published": false,
+      "coa_url": null,
+      "lab_id": null,
+      "test_date": null,
+      "release_gates": {
+        "LEGAL_CHECK": false, "SUPPLIER_VERIFIED": false, "IMPORT_OK": false,
+        "SDS_CLP_OK": false, "SAMPLE_RECEIVED": false, "LAB_TESTED": false,
+        "LAB_PASS": false, "COA_UPLOADED": false, "PRODUCT_DATA_VERIFIED": false,
+        "PRICE_APPROVED": false, "WEBSITE_RELEASED": false
+      }
+    }
+  ]
+}

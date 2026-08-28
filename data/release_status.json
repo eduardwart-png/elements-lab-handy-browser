@@ -1,0 +1,17 @@
+{
+  "DESIGN_READY": null,
+  "DATA_READY": null,
+  "LEGAL_READY": false,
+  "COMPLIANCE_READY": false,
+  "LAB_READY": false,
+  "CERTIFICATES_READY": false,
+  "PAYMENT_READY": false,
+  "SHIPPING_READY": false,
+  "TECH_READY": null,
+  "LIVE_READY": false,
+  "_meta": {
+    "schema_version": "v6",
+    "last_updated": "2026-08-29",
+    "note": "All gates must be true before LIVE_READY can be set to true. Each gate requires documented external validation."
+  }
+}

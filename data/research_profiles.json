@@ -1,0 +1,733 @@
+{
+  "_meta": {
+    "schema_version": "v6",
+    "generated": "2026-08-29",
+    "total_profiles": 16,
+    "ssot": "build_elements_site.py:RESEARCH_PROFILES",
+    "note": "Source of truth is RESEARCH_PROFILES in build_elements_site.py. This file is a snapshot export for external tooling."
+  },
+  "profiles": {
+    "bpc-157": {
+      "id": "bpc-157",
+      "research_class": "Synthetisches Pentadecapeptid (gastroprotektiv/regenerativ)",
+      "molecular_type": "Peptid, 15 Aminosaeuren (Gastric Pentadecapeptide, Sequenz aus Magensaft-Protein abgeleitet)",
+      "research_focus": "Praeklinische Forschung zu Gewebereparatur: Sehnen-, Band-, Muskel- und Knochenheilung, gastrointestinale Zytoprotektion, Angiogenese, Endothelschutz",
+      "mechanism_summary": "In Tiermodellen wird eine Foerderung der Angiogenese ueber VEGFR2-Aktivierung und den Akt-eNOS-Signalweg (Stickstoffmonoxid-Produktion) beschrieben. Weitere untersuchte Signalwege umfassen ERK1/2 (mit c-Fos, c-Jun, Egr-1), FAK-Paxillin (Zelladhaesion/-migration) sowie eine Modulation von Wachstumshormonrezeptor-Expression in Sehnenfibroblasten. Zusaetzlich werden entzuendungsmodulierende Effekte (Reduktion von COX-2, IL-6, TNF-alpha) sowie Interaktionen mit dopaminergen/serotonergen Systemen berichtet.",
+      "research_context": "BPC-157 wurde erstmals 1993 aus humanem Magensaft isoliert und ist seit den 1990er-Jahren Gegenstand einer umfangreichen Zahl praeklinischer Studien einer kroatischen Forschungsgruppe (Sikiric et al.) sowie zunehmend anderer Labore, die sich mit Wundheilung, GI-Laesionen und muskuloskelettaler Regeneration befassen.",
+      "evidence_summary": "Die Evidenzbasis besteht ueberwiegend aus Nager- und Kaninchenmodellen (Sehnen-, Band-, Muskeltranssektion, Frakturheilung, GI-Fisteln, Kolitis). Eine systematische Uebersichtsarbeit (HSS Journal 2025) identifizierte 36 Studien, davon 35 praeklinisch und lediglich 1 klinische (retrospektive) Studie. Eine Phase-II-Studie zur Colitis ulcerosa (PL-14736) wurde konferenzberichtet, jedoch nie vollstaendig peer-reviewed publiziert; ein 2015 begonnener Phase-I-Sicherheitstrial (NCT02637284) wurde 2016 ohne veroeffentlichte Ergebnisse abgebrochen. Eine kleine 2025er Pilotstudie (n=2, intravenoes) berichtete keine akuten Nebenwirkungen.",
+      "key_research_topics": [
+        "Angiogenese (VEGFR2/Akt/eNOS-Signalweg)",
+        "Sehnen-, Band- und Muskelheilung in Nagermodellen",
+        "Gastrointestinale Zytoprotektion und Fistelheilung",
+        "Entzuendungsmodulation (COX-2, IL-6, TNF-alpha)",
+        "Frakturheilung (Kaninchen-Nonunion-Modell)",
+        "Dopaminerge/serotonerge Modulation im ZNS"
+      ],
+      "limitations": "Nahezu die gesamte Evidenz stammt aus Tiermodellen (Ratte, Kaninchen, Schwein); kontrollierte randomisierte Humanstudien fehlen. Die einzige beim Menschen erhobene Wirksamkeitsdaten (retrospektive Kniepatienten-Kohorte, n=12) ist unkontrolliert. Die FDA stufte BPC-157 2023 als Kategorie-2-Bulk-Substanz mit ungeklaerter Sicherheitslage ein; mehrere Sportverbaende (WADA, UFC, NFL) haben die Substanz verboten.",
+      "research_status": "Ausschliesslich praeklinisch/experimentell; keine behoerdliche Zulassung fuer eine therapeutische Indikation; in mehreren Laendern/Sportverbaenden reguliert oder verboten",
+      "references": [
+        {
+          "author": "Sikiric P, Seiwerth S, Rucman R, et al.",
+          "journal": "Current Pharmaceutical Design",
+          "year": "2011",
+          "identifier": "PMID: 21548867",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/21548867/"
+        },
+        {
+          "author": "Sikiric P, Seiwerth S, Rucman R, et al.",
+          "journal": "Current Medicinal Chemistry",
+          "year": "2012",
+          "identifier": "PMID: 22300085",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22300085/"
+        },
+        {
+          "author": "Systematic Review Authors (HSS Journal)",
+          "journal": "HSS Journal: The Musculoskeletal Journal of Hospital for Special Surgery",
+          "year": "2025",
+          "identifier": "PMID: 40756949",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12313605/"
+        },
+        {
+          "author": "Sikiric P, Hahm KB, Blagaic AB, et al.",
+          "journal": "Gut and Liver",
+          "year": "2020",
+          "identifier": "PMID: 31158953",
+          "url": "https://www.gutnliver.org/journal/view.html?doi=10.5009%2Fgnl18490"
+        }
+      ]
+    },
+    "tb-500": {
+      "id": "tb-500",
+      "research_class": "Synthetisches Peptid-Fragment / kommerzielle Bezeichnung fuer Thymosin-Beta-4-verwandte Produkte",
+      "molecular_type": "Peptid; TB-500 wird in der wissenschaftlichen Literatur als kommerzielle Bezeichnung fuer synthetische, mit Thymosin-Beta-4 (Tb4, 43 Aminosaeuren) verwandte Produkte behandelt",
+      "research_focus": "Praeklinische Forschung zu Zellmigration, Angiogenese und Geweberegeneration ueber Aktin-Sequestrierung; Schwerpunkte in Wund-/Hautheilung, vaskulaerer/endothelialer Forschung und okulaeren Modellen",
+      "mechanism_summary": "Der am besten charakterisierte Mechanismus von Thymosin-Beta-4 ist die reversible Sequestrierung von G-Aktin ueber eine WH2-Domaene, die die Zellmigration durch Lamellipodienbildung foerdert. Daneben werden eine Hochregulation von VEGF-A (teilweise ueber nukleaere MRTF-A-Interaktion), Notch-Signalwege bei der Angiogenese, PI3K/Akt/eNOS-Signaltransduktion sowie eine Modulation von NF-kB-vermittelter Entzuendung beschrieben.",
+      "research_context": "Thymosin Beta-4 ist ein natuerlich vorkommendes, weit verbreitetes Peptid mit gut dokumentierter Rolle in Zellmigration und Wundheilung (Goldstein, Kleinman u.a., seit den 1990er-Jahren). Die Bezeichnung TB-500 wird ueberwiegend im kommerziellen/Freizeit-Kontext fuer synthetische Praeparate verwendet, deren direkte Erforschung deutlich sparsamer ist als jene von Tb4 selbst.",
+      "evidence_summary": "Ein Scoping Review (Applied Sciences, 2026) katalogisierte 80 eingeschlossene Studien zu Tb4/TB-500 aus PubMed, Europe PMC und ClinicalTrials.gov; 87,5% der Interventionsstudien betrafen Tb4, nur eine Studie direkt TB-500 (limitiert auf Metabolitennachweis und In-vitro-Fibroblasten-Screening). Humanevidenz war auf okulaere/kornea- und Haut-/Wundmodelle konzentriert; direkte muskuloskelettale Humanevidenz fuer TB-500 fehlt weitgehend. Fuer Tb4 existieren fruehe klinische Studien zu dermalen Wunden und Augenverletzungen (Goldstein/Kleinman-Gruppe).",
+      "key_research_topics": [
+        "G-Aktin-Sequestrierung (WH2-Domaene) und Zellmigration",
+        "Angiogenese ueber VEGF-A, Notch- und PI3K/Akt/eNOS-Signalwege",
+        "Dermale Wundheilung in diabetischen und gealterten Maeusemodellen",
+        "Kornea-/Augenepithelheilung",
+        "Kardioprotektion nach Ischaemie (praeklinisch)",
+        "Entzuendungsmodulation via NF-kB"
+      ],
+      "limitations": "Direkte Studien zu TB-500 als eigenstaendiger Wirkstoff sind extrem selten; die Mehrheit der zitierten Mechanismus- und Wirksamkeitsdaten bezieht sich auf Thymosin Beta-4 (Tb4), nicht auf das kommerziell als TB-500 vertriebene Produkt, dessen Aequivalenz zu Tb4 in der Literatur uneinheitlich behandelt wird. Muskuloskelettale Gewebekategorien (Sehne, Band, Muskel, Bandscheibe) sind in der Evidenzbasis unterrepraesentiert; Humanevidenz mit direktem Bezug zu muskuloskelettalen Anwendungen ist limitiert.",
+      "research_status": "Ueberwiegend praeklinisch/in-vitro; fuer Tb4 vereinzelte fruehe klinische Studien (Haut, Auge, Herz), fuer TB-500 spezifisch nahezu keine direkte Humanevidenz; keine behoerdliche Zulassung",
+      "references": [
+        {
+          "author": "Scoping Review Authors",
+          "journal": "Applied Sciences (MDPI)",
+          "year": "2026",
+          "identifier": "DOI: 10.3390/app16126202",
+          "url": "https://doi.org/10.3390/app16126202"
+        },
+        {
+          "author": "Goldstein AL, Hannappel E, Sosne G, Kleinman HK",
+          "journal": "Expert Opinion on Biological Therapy",
+          "year": "2012",
+          "identifier": "PMID: 22074294",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22074294"
+        },
+        {
+          "author": "Treadwell T, Kleinman HK, Crockford D, Hardy MA, Guarnera GT, Goldstein AL",
+          "journal": "Annals of the New York Academy of Sciences",
+          "year": "2012",
+          "identifier": "PMID: 23050815",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/23050815"
+        },
+        {
+          "author": "Philp D, Badamchian M, Scheremeta B, Nguyen M, Goldstein AL, Kleinman HK",
+          "journal": "Wound Repair and Regeneration",
+          "year": "2003",
+          "identifier": "PMID: 12581423",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12581423"
+        }
+      ]
+    },
+    "ghk-cu": {
+      "id": "ghk-cu",
+      "research_class": "Kupfer-Tripeptid-Komplex (Kollagen-abgeleitetes Signalpeptid)",
+      "molecular_type": "Tripeptid-Kupfer(II)-Komplex, Glycyl-L-Histidyl-L-Lysin (GHK) gebunden an Cu2+",
+      "research_focus": "Forschung zu Hautregeneration, Kollagen-/Elastinsynthese, Wundheilung und Genexpressionsmodulation",
+      "mechanism_summary": "GHK ist eine Sequenz aus der Alpha-2(I)-Kette von Typ-I-Kollagen und wird bei Gewebeschaedigung proteolytisch freigesetzt; der Komplex mit Cu(II) gilt als biologisch relevante Form. Beschriebene Mechanismen umfassen Stimulation der Kollagen-, Glykosaminoglykan- und Decorin-Synthese, Modulation von Metalloproteinasen (MMP1/2) und deren Inhibitoren (TIMP1), Kupfer-abhaengige Aktivierung von Lysyloxidase fuer Kollagenvernetzung sowie breite Effekte auf die Genexpression (laut Connectivity-Map-Analysen Modulation eines relevanten Anteils des menschlichen Genoms).",
+      "research_context": "GHK wurde 1973 aus humanem Plasma isoliert; die Konzentration im Plasma sinkt nachweislich mit dem Alter (ca. 200 ng/mL bei 20 Jahren vs. 80 ng/mL bei 60 Jahren). Seit den 1980er-Jahren (Maquart et al.) als moegliches fruehes Signalmolekuel der Hautreparatur untersucht; umfangreiche kosmetische Dermatologie-Forschung seit den 1990er-Jahren (Pickart et al.).",
+      "evidence_summary": "Im Gegensatz zu BPC-157 und TB-500 existieren fuer GHK-Cu mehrere randomisierte, placebokontrollierte klinische Studien am Menschen im kosmetischen/dermatologischen Bereich (z.B. Gesichtscremes ueber 12 Wochen bei photogealterter Haut, n=71; periokulaere Anwendung, n=41), die Verbesserungen von Hautdichte, Faltentiefe und Kollagenproduktion zeigten. Fuer chronische Wunden (diabetische Fussulzera, venoese Ulzera) bleibt die Evidenz auf Tiermodelle und kleine Beobachtungsdaten beschraenkt. Die topische Hautpenetration insbesondere liposomaler Formulierungen gilt methodisch als ungeklaerter Bereich.",
+      "key_research_topics": [
+        "Kollagen- und Elastinsynthese in Hautfibroblasten",
+        "Genexpressionsmodulation (Connectivity-Map-Analysen)",
+        "Wundheilung in diabetischen und ischaemischen Nagermodellen",
+        "Kosmetische Anti-Aging-Studien (randomisiert, placebokontrolliert)",
+        "Nerven- und Gefaessneubildung (Neurotrophine, SPARC-Protein-Fragmente)",
+        "Antioxidative und entzuendungshemmende Effekte"
+      ],
+      "limitations": "Klinische Evidenz beschraenkt sich weitgehend auf kosmetische/dermatologische Endpunkte an intakter Haut; direkte Studien zu chronischen oder komplexen Wunden beim Menschen sind rar. Die Hautpenetration des hydrophilen Peptids bleibt ein methodisch ungeloestes Problem, das die klinische Translation limitiert. Der Wirkstoff ist zudem empfindlich gegenueber enzymatischem Abbau (Carboxypeptidasen) in Wundmilieus.",
+      "research_status": "Kombination aus praeklinischer Forschung und mehreren klinischen kosmetischen Studien am Menschen; breit in kosmetischen Produkten eingesetzt, jedoch nicht als Arzneimittel fuer Wundheilungsindikationen zugelassen",
+      "references": [
+        {
+          "author": "Pickart L, Margolina A",
+          "journal": "International Journal of Molecular Sciences",
+          "year": "2018",
+          "identifier": "PMID: 29986520",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6073405/"
+        },
+        {
+          "author": "Pickart L",
+          "journal": "Journal of Biomaterials Science, Polymer Edition",
+          "year": "2008",
+          "identifier": "PMID: 18644225",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18644225"
+        },
+        {
+          "author": "Arul V, et al.",
+          "journal": "Journal of Biomedical Materials Research Part B",
+          "year": "2005",
+          "identifier": "PMID: 15803494",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/15803494"
+        },
+        {
+          "author": "Ogorek K, et al.",
+          "journal": "Molecules",
+          "year": "2025",
+          "identifier": "PMID: 39795193",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/39795193"
+        }
+      ]
+    },
+    "ipamorelin": {
+      "id": "ipamorelin",
+      "research_class": "Synthetisches Pentapeptid, selektives Growth-Hormone-Secretagogue (GHS-R1a-Agonist)",
+      "molecular_type": "Pentapeptid, Aib-His-D-2-Nal-D-Phe-Lys-NH2 (CAS 170851-70-4)",
+      "research_focus": "Forschung zur selektiven Stimulation der Wachstumshormon(GH)-Ausschuettung ueber den Ghrelin-Rezeptor (GHS-R1a) ohne relevante Beeinflussung von ACTH, Cortisol oder Prolaktin",
+      "mechanism_summary": "Ipamorelin bindet als Agonist an den GHS-R1a-Rezeptor (Ghrelin-Rezeptor) somatotroper Hypophysenzellen und loest ueber eine Gq/PLC/IP3-Kaskade eine kalziumvermittelte Exozytose gespeicherter GH-Vesikel aus. Im Unterschied zu aelteren GH-freisetzenden Peptiden (GHRP-6, GHRP-2) zeigte Ipamorelin in tierexperimentellen Studien (Schwein) selbst bei Dosen ueber dem 200-fachen der GH-wirksamen ED50 keine signifikante Erhoehung von ACTH oder Cortisol.",
+      "research_context": "Ipamorelin wurde von Novo Nordisk entwickelt und 1998 von Raun et al. als 'erstes selektives Growth-Hormone-Secretagogue' beschrieben; es entstand aus einem Chemieprogramm, das GHRP-1-Analoga ohne das zentrale Ala-Trp-Dipeptid untersuchte.",
+      "evidence_summary": "Die Originalpublikation (Raun et al. 1998) dokumentiert In-vitro-Daten an primaeren Rattenhypophysenzellen sowie In-vivo-Daten an wachen Schweinen zur Rezeptorselektivitaet. Eine Humanstudie (Gobburu et al. 1999) untersuchte Pharmakokinetik/Pharmakodynamik bei gesunden maennlichen Probanden mittels Dosis-Eskalationsdesign (5 Infusionsraten, je n=8) und beschreibt eine terminale Halbwertszeit von ca. 2 Stunden sowie einen GH-Ausschuettungspeak nach ca. 0,67 Stunden. Eine behoerdliche Zulassung fuer eine therapeutische Indikation liegt nicht vor.",
+      "key_research_topics": [
+        "Selektive GHS-R1a-Rezeptoraktivierung",
+        "Pulsatile Wachstumshormon-Ausschuettung",
+        "Pharmakokinetik/-dynamik beim Menschen (Dosis-Eskalationsstudie)",
+        "Vergleichende Rezeptorselektivitaet gegenueber GHRP-2/GHRP-6",
+        "Interaktion mit Somatostatin-vermittelter GH-Suppression",
+        "Kombinationsforschung mit GHRH-Analoga (z.B. CJC-1295) in praeklinischen/experimentellen Kontexten"
+      ],
+      "limitations": "Die zentrale Selektivitaetsstudie (Raun et al. 1998) wurde primaer an Schweinen und Ratten durchgefuehrt; die verfuegbare Humanevidenz (Gobburu et al. 1999) beschraenkt sich auf eine kleine Pharmakokinetik/-dynamik-Studie ohne Wirksamkeitsendpunkte fuer eine spezifische Indikation. Langzeitsicherheits- und Wirksamkeitsdaten beim Menschen fuer therapeutische Anwendungen fehlen; keine grossen randomisierten kontrollierten Studien bekannt.",
+      "research_status": "Fruehe klinische Pharmakologie (Phase-I-aehnliche PK/PD-Studie) plus umfangreiche praeklinische tierexperimentelle Charakterisierung; kein zugelassenes Arzneimittel, reiner Forschungsstatus",
+      "references": [
+        {
+          "author": "Raun K, Hansen BS, Johansen NL, et al.",
+          "journal": "European Journal of Endocrinology",
+          "year": "1998",
+          "identifier": "PMID: 9849822",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/9849822"
+        },
+        {
+          "author": "Gobburu JV, Agerso H, Jusko WJ, Ynddal L",
+          "journal": "Pharmaceutical Research",
+          "year": "1999",
+          "identifier": "PMID: 10496658",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10496658/"
+        }
+      ]
+    },
+    "kpv": {
+      "id": "kpv",
+      "research_class": "Melanocortin-derived tripeptide",
+      "molecular_type": "Tripeptide (Lys-Pro-Val), C-terminal fragment of alpha-MSH (11-13)",
+      "research_focus": "Anti-inflammatory signaling in intestinal and dermal tissue models",
+      "mechanism_summary": "KPV is the C-terminal tripeptide of alpha-melanocyte-stimulating hormone (alpha-MSH). Preclinical work indicates it is taken up by intestinal epithelial and immune cells via the PepT1 di/tripeptide transporter, after which it inhibits NF-kB and MAP-kinase inflammatory signaling and reduces secretion of pro-inflammatory cytokines (TNF-alpha, IL-1beta, IL-6). Unlike the parent alpha-MSH molecule, KPV's anti-inflammatory action appears largely independent of classical melanocortin receptor (MC1-R) activation and cAMP signaling, pointing instead to a receptor-independent or IL-1beta-pathway-related mode of action.",
+      "research_context": "Investigated as a candidate anti-inflammatory research tool for inflammatory bowel disease (IBD) and skin inflammation models, building on decades of alpha-MSH immunomodulation research.",
+      "evidence_summary": "Evidence is exclusively preclinical (in vitro cell culture and rodent models). No published human clinical trials were identified. Key preclinical findings: KPV reduced pro-inflammatory cytokine secretion and colitis severity in DSS- and TNBS-induced mouse colitis models via PepT1-mediated uptake (Dalmasso et al., 2008); KPV reduced leukocyte accumulation in a mouse crystal-induced peritonitis model independent of MC1-R/cAMP signaling (Getting et al., 2003); broader alpha-MSH/KPV anti-inflammatory literature reviewed by Luger et al. (2003).",
+      "key_research_topics": [
+        "NF-kB and MAP-kinase inflammatory signaling inhibition",
+        "PepT1-mediated cellular peptide uptake",
+        "Rodent colitis models (DSS-, TNBS-induced)",
+        "Melanocortin receptor-independent anti-inflammatory activity",
+        "IL-1beta pathway interaction"
+      ],
+      "limitations": "No controlled human trials identified in the literature; all efficacy signals derive from rodent models and cultured cell lines. Pharmacokinetics, dosing, long-term safety, and effects in human inflammatory disease remain uncharacterized. Purity and sourcing are not standardized outside controlled research settings.",
+      "research_status": "Preclinical (in vitro and rodent in vivo); not evaluated in registered human clinical trials",
+      "references": [
+        {
+          "author": "Getting SJ, Schioth HB, Perretti M",
+          "journal": "Journal of Pharmacology and Experimental Therapeutics",
+          "year": 2003,
+          "identifier": "PMID 12750433",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12750433/"
+        },
+        {
+          "author": "Dalmasso G, Charrier-Hisamuddin L, Nguyen HTT, Yan Y, Sitaraman S, Merlin D",
+          "journal": "Gastroenterology",
+          "year": 2008,
+          "identifier": "PMID 18061177",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18061177/"
+        },
+        {
+          "author": "Luger TA, Scholzen TE, Brzoska T, Bohm M",
+          "journal": "Annals of the New York Academy of Sciences",
+          "year": 2003,
+          "identifier": "PMID 12851308",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12851308/"
+        }
+      ]
+    },
+    "selank": {
+      "id": "selank",
+      "research_class": "Synthetic tuftsin-derived heptapeptide",
+      "molecular_type": "Heptapeptide (Thr-Lys-Pro-Arg-Pro-Gly-Pro), synthetic analog of the immune peptide tuftsin",
+      "research_focus": "Anxiolytic and nootropic activity via GABAergic, serotonergic, and enkephalinergic modulation",
+      "mechanism_summary": "Selank is a synthetic extension of tuftsin engineered for metabolic stability. Proposed mechanisms include positive allosteric modulation of GABA-A receptor binding, inhibition of enkephalin-degrading enzymes (raising endogenous enkephalin/leu-enkephalin tone), and modulation of expression of genes involved in GABAergic neurotransmission (GABA receptor subunits, transporters, ion channels) in rodent brain tissue. Its interaction with benzodiazepine-site modulators (e.g., diazepam) appears non-additive, suggesting overlapping but distinct binding behavior from classical benzodiazepines.",
+      "research_context": "Developed at the Institute of Molecular Genetics of the Russian Academy of Sciences; approved in Russia as a prescription anxiolytic for generalized anxiety disorder and neurasthenia. Outside Russia it remains an investigational research compound.",
+      "evidence_summary": "Evidence includes a Russian human clinical study and multiple rodent mechanistic studies. Clinical: a controlled comparison in 62 patients with generalized anxiety disorder/neurasthenia reported anxiolytic efficacy comparable to the benzodiazepine medazepam, without added sedation (Zozulya et al., 2008, published in Russian). Mechanistic/preclinical: inhibition of enkephalin-degrading aminopeptidases in blood serum (Zozulya et al., 2001); altered expression of GABAergic neurotransmission-related genes in rat frontal cortex (Volkova et al., 2016); review of allosteric GABA-receptor modulation and benzodiazepine interaction (Vyunova et al., 2018).",
+      "key_research_topics": [
+        "GABA-A receptor allosteric modulation",
+        "Enkephalin-degrading enzyme inhibition",
+        "Gene expression changes in GABAergic neurotransmission",
+        "Comparative anxiolytic activity vs. benzodiazepines",
+        "Stress-response and cytokine modulation"
+      ],
+      "limitations": "The principal human clinical data (Zozulya et al., 2008) is a single, older, Russian-language study with limited methodological transparency by current international trial-reporting standards; independent replication in peer-reviewed international journals is limited. Most detailed mechanistic work is in rodent models. Long-term human safety data are sparse outside Russian regulatory use.",
+      "research_status": "Approved pharmaceutical in Russia (GAD/neurasthenia); investigational/research-only status in most other jurisdictions; mechanistic evidence base mixed human clinical + rodent preclinical",
+      "references": [
+        {
+          "author": "Vyunova TV, Andreeva LA, Shevchenko KV, Myasoedov NF, Shram SI",
+          "journal": "Protein and Peptide Letters",
+          "year": 2018,
+          "identifier": "PMID 30255741",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30255741"
+        },
+        {
+          "author": "Zozulya AA, Neznamov GG, Siuniakov SA, Kost NV, Zozulia SA, Sokolov OY, Davydova IA, Telesheva ES",
+          "journal": "Zhurnal Nevrologii i Psikhiatrii Imeni S.S. Korsakova",
+          "year": 2008,
+          "identifier": "PMID 18454096",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18454096"
+        },
+        {
+          "author": "Volkova AA, Shadrina MI, Kolomin TA, Andreeva LA, Limborska SA, Myasoedov NF, Dergunova LV",
+          "journal": "Frontiers in Pharmacology",
+          "year": 2016,
+          "identifier": "PMID 26924987",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/26924987/"
+        },
+        {
+          "author": "Zozulya AA, Kost NV, Sokolov OY, Gabaeva MV, Grivennikov IA, Andreeva LN, Zolotarev YA, Ivanov SV, Andryushchenko AV, Myasoedov NF, Smulevich AB",
+          "journal": "Bulletin of Experimental Biology and Medicine",
+          "year": 2001,
+          "identifier": "PMID 11550013",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11550013/"
+        }
+      ]
+    },
+    "semax": {
+      "id": "semax",
+      "research_class": "Synthetic ACTH-fragment neuropeptide",
+      "molecular_type": "Heptapeptide, synthetic analog of ACTH(4-10) with an added Pro-Gly-Pro tripeptide extension",
+      "research_focus": "Neuroprotection and cognitive/neurotrophic modulation via BDNF/NGF signaling",
+      "mechanism_summary": "Semax is a non-hormonally-active fragment of adrenocorticotropic hormone (ACTH) engineered for enzymatic stability. Preclinical studies report that intranasal Semax rapidly upregulates brain-derived neurotrophic factor (BDNF) and nerve growth factor (NGF) gene/protein expression in rat hippocampus, frontal cortex, and basal forebrain, with time-dependent, tissue-specific kinetics (early rise within ~90 minutes, return toward baseline by 24 hours). Specific, calcium-dependent binding sites for Semax have been identified in rat basal forebrain membranes, suggesting a distinct (non-ACTH-receptor) binding interaction linked to neurotrophin induction.",
+      "research_context": "Developed in Russia and used there as a registered prescription nootropic/neuroprotective drug for stroke and cognitive indications; studied internationally primarily as a preclinical neurotrophin-signaling research tool.",
+      "evidence_summary": "Evidence spans rodent mechanistic studies and Russian clinical trials in stroke patients. Mechanistic: Semax stimulated BDNF/trkB expression in rat hippocampus (Dolotov et al., 2006); comparative BDNF/NGF gene expression dynamics across hippocampus, frontal cortex, and retina (Shadrina et al., 2010). Clinical: a Russian trial of early rehabilitation combined with Semax reported increased plasma BDNF and improved motor/functional recovery in ischemic stroke patients (Gusev et al., 2018).",
+      "key_research_topics": [
+        "BDNF and NGF gene/protein induction",
+        "Neurotrophin receptor (trkB) expression modulation",
+        "Rodent models of cerebral ischemia and hypoxia",
+        "Intranasal delivery pharmacodynamics",
+        "Post-stroke rehabilitation and cognitive recovery (Russian clinical use)"
+      ],
+      "limitations": "Clinical trials are predominantly from Russian research groups and published in Russian-language or regional journals, limiting independent international replication and methodological scrutiny by Western trial standards. Mechanistic BDNF/NGF findings are largely from rodent brain tissue; extrapolation to human neurochemistry is not fully established. Semax is not approved by the FDA/EMA.",
+      "research_status": "Approved prescription drug in Russia for stroke/cognitive indications; investigational/research-only status elsewhere; mechanistic evidence base mixed rodent preclinical + Russian clinical",
+      "references": [
+        {
+          "author": "Dolotov OV, Karpenko EA, Inozemtseva LS, Seredenina TS, Levitskaya NG, Rozyczka J, Dubynina EV, Novosadova EV, Andreeva LA, Alfeeva LY, Kamensky AA, Grivennikov IA, Myasoedov NF, Engele J",
+          "journal": "Brain Research",
+          "year": 2006,
+          "identifier": "PMID 16635254",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16635254"
+        },
+        {
+          "author": "Shadrina M, Kolomin T, Agapova T, Agniullin Y, Shram S, Slominsky P, Limborska S, Myasoedov N",
+          "journal": "Journal of Molecular Neuroscience",
+          "year": 2010,
+          "identifier": "PMID 19662538",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/19662538"
+        },
+        {
+          "author": "Gusev EI, Martynov MY, Kamchatnov PR, et al.",
+          "journal": "Zhurnal Nevrologii i Psikhiatrii Imeni S.S. Korsakova",
+          "year": 2018,
+          "identifier": "PMID 29798983",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/29798983/"
+        }
+      ]
+    },
+    "mots-c": {
+      "id": "mots-c",
+      "research_class": "Mitochondrial-derived peptide (MDP)",
+      "molecular_type": "16-amino-acid peptide encoded by a short open reading frame within the mitochondrial 12S rRNA gene",
+      "research_focus": "Mitochondrial-nuclear signaling in metabolic regulation, insulin sensitivity, and exercise physiology",
+      "mechanism_summary": "MOTS-c is translated from a short open reading frame in mitochondrial DNA and translocates to the nucleus under metabolic stress to regulate nuclear gene expression, acting as a mitochondrial-nuclear retrograde signal. Its primary described target is skeletal muscle, where it inhibits the folate-methionine cycle and downstream de novo purine biosynthesis, causing AICAR accumulation and activation of AMPK. Downstream effects include increased GLUT4-mediated glucose uptake, altered fatty acid oxidation, and modulation of inflammatory signaling (NF-kB) pathways.",
+      "research_context": "Discovered in 2015 as part of a broader class of mitochondrial-derived peptides (alongside humanin); investigated as an 'exercise mimetic' candidate and metabolic/aging regulator.",
+      "evidence_summary": "Evidence is predominantly preclinical, from rodent and cell-culture studies, with human data limited to correlational exercise-response measurements (not peptide administration trials). Key findings: MOTS-c treatment prevented age- and high-fat-diet-induced insulin resistance and obesity in mice via AMPK activation (Lee et al., 2015); MOTS-c improved physical performance, muscle homeostasis, and running capacity in aged mice, and endogenous MOTS-c rose in human skeletal muscle and plasma after acute exercise (Reynolds et al., 2021 — the exercise-induced-rise finding is in humans; the therapeutic peptide-administration findings are in mice only).",
+      "key_research_topics": [
+        "AMPK activation via folate-methionine/purine pathway inhibition",
+        "Skeletal muscle glucose uptake (GLUT4 translocation)",
+        "Age-related physical decline and muscle homeostasis in rodent models",
+        "Exercise-induced endogenous MOTS-c levels in humans (observational)",
+        "Insulin resistance and diet-induced obesity models"
+      ],
+      "limitations": "No published interventional human trials of administered MOTS-c peptide were identified; all therapeutic/administration efficacy data are from mouse and cell-culture models. Human evidence is limited to observational measurement of endogenous MOTS-c changes with exercise, which does not establish efficacy or safety of exogenous peptide administration. Long-term safety, pharmacokinetics, and dosing in humans are uncharacterized.",
+      "research_status": "Preclinical (rodent and in vitro); human data limited to observational endogenous biomarker studies, not interventional peptide trials",
+      "references": [
+        {
+          "author": "Lee C, Zeng J, Drew BG, Sallam T, Martin-Montalvo A, Wan J, Kim SJ, Mehta H, Hevener AL, de Cabo R, Cohen P",
+          "journal": "Cell Metabolism",
+          "year": 2015,
+          "identifier": "PMID 25738459",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25738459/"
+        },
+        {
+          "author": "Reynolds JC, Lai RW, Woodhead JST, Joly JH, Mitchell CJ, Cameron-Smith D, Lu R, Cohen P, Graham NA, Benayoun BA, Lee C, et al.",
+          "journal": "Nature Communications",
+          "year": 2021,
+          "identifier": "PMID 33473109; doi 10.1038/s41467-020-20790-0",
+          "url": "https://www.nature.com/articles/s41467-020-20790-0"
+        },
+        {
+          "author": "Lee C, Kim KH, Cohen P",
+          "journal": "Free Radical Biology and Medicine",
+          "year": 2016,
+          "identifier": "PMID 27216708",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27216708/"
+        }
+      ]
+    },
+    "mots-c-10": {
+      "id": "mots-c-10",
+      "research_class": "Mitochondrial-derived peptide (MDP)",
+      "molecular_type": "16-amino-acid peptide encoded by a short open reading frame within the mitochondrial 12S rRNA gene",
+      "research_focus": "Mitochondrial-nuclear signaling in metabolic regulation, insulin sensitivity, and exercise physiology",
+      "mechanism_summary": "MOTS-c is translated from a short open reading frame in mitochondrial DNA and translocates to the nucleus under metabolic stress to regulate nuclear gene expression, acting as a mitochondrial-nuclear retrograde signal. Its primary described target is skeletal muscle, where it inhibits the folate-methionine cycle and downstream de novo purine biosynthesis, causing AICAR accumulation and activation of AMPK. Downstream effects include increased GLUT4-mediated glucose uptake, altered fatty acid oxidation, and modulation of inflammatory signaling (NF-kB) pathways.",
+      "research_context": "Discovered in 2015 as part of a broader class of mitochondrial-derived peptides (alongside humanin); investigated as an 'exercise mimetic' candidate and metabolic/aging regulator.",
+      "evidence_summary": "Evidence is predominantly preclinical, from rodent and cell-culture studies, with human data limited to correlational exercise-response measurements (not peptide administration trials). Key findings: MOTS-c treatment prevented age- and high-fat-diet-induced insulin resistance and obesity in mice via AMPK activation (Lee et al., 2015); MOTS-c improved physical performance, muscle homeostasis, and running capacity in aged mice, and endogenous MOTS-c rose in human skeletal muscle and plasma after acute exercise (Reynolds et al., 2021 — the exercise-induced-rise finding is in humans; the therapeutic peptide-administration findings are in mice only).",
+      "key_research_topics": [
+        "AMPK activation via folate-methionine/purine pathway inhibition",
+        "Skeletal muscle glucose uptake (GLUT4 translocation)",
+        "Age-related physical decline and muscle homeostasis in rodent models",
+        "Exercise-induced endogenous MOTS-c levels in humans (observational)",
+        "Insulin resistance and diet-induced obesity models"
+      ],
+      "limitations": "No published interventional human trials of administered MOTS-c peptide were identified; all therapeutic/administration efficacy data are from mouse and cell-culture models. Human evidence is limited to observational measurement of endogenous MOTS-c changes with exercise, which does not establish efficacy or safety of exogenous peptide administration. Long-term safety, pharmacokinetics, and dosing in humans are uncharacterized.",
+      "research_status": "Preclinical (rodent and in vitro); human data limited to observational endogenous biomarker studies, not interventional peptide trials",
+      "references": [
+        {
+          "author": "Lee C, Zeng J, Drew BG, et al.",
+          "journal": "Cell Metabolism",
+          "year": 2015,
+          "identifier": "PMID 25738459",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25738459/"
+        },
+        {
+          "author": "Reynolds JC, Lai RW, Woodhead JST, et al.",
+          "journal": "Nature Communications",
+          "year": 2021,
+          "identifier": "PMID 33473109; doi 10.1038/s41467-020-20790-0",
+          "url": "https://www.nature.com/articles/s41467-020-20790-0"
+        },
+        {
+          "author": "Lee C, Kim KH, Cohen P",
+          "journal": "Free Radical Biology and Medicine",
+          "year": 2016,
+          "identifier": "PMID 27216708",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27216708/"
+        }
+      ]
+    },
+    "mots-c-20": {
+      "id": "mots-c-20",
+      "research_class": "Mitochondrial-derived peptide (MDP)",
+      "molecular_type": "16-amino-acid peptide encoded by a short open reading frame within the mitochondrial 12S rRNA gene",
+      "research_focus": "Mitochondrial-nuclear signaling in metabolic regulation, insulin sensitivity, and exercise physiology",
+      "mechanism_summary": "MOTS-c is translated from a short open reading frame in mitochondrial DNA and translocates to the nucleus under metabolic stress to regulate nuclear gene expression, acting as a mitochondrial-nuclear retrograde signal. Its primary described target is skeletal muscle, where it inhibits the folate-methionine cycle and downstream de novo purine biosynthesis, causing AICAR accumulation and activation of AMPK. Downstream effects include increased GLUT4-mediated glucose uptake, altered fatty acid oxidation, and modulation of inflammatory signaling (NF-kB) pathways.",
+      "research_context": "Discovered in 2015 as part of a broader class of mitochondrial-derived peptides (alongside humanin); investigated as an 'exercise mimetic' candidate and metabolic/aging regulator.",
+      "evidence_summary": "Evidence is predominantly preclinical, from rodent and cell-culture studies, with human data limited to correlational exercise-response measurements (not peptide administration trials). Key findings: MOTS-c treatment prevented age- and high-fat-diet-induced insulin resistance and obesity in mice via AMPK activation (Lee et al., 2015); MOTS-c improved physical performance, muscle homeostasis, and running capacity in aged mice, and endogenous MOTS-c rose in human skeletal muscle and plasma after acute exercise (Reynolds et al., 2021).",
+      "key_research_topics": [
+        "AMPK activation via folate-methionine/purine pathway inhibition",
+        "Skeletal muscle glucose uptake (GLUT4 translocation)",
+        "Age-related physical decline and muscle homeostasis in rodent models",
+        "Exercise-induced endogenous MOTS-c levels in humans (observational)",
+        "Insulin resistance and diet-induced obesity models"
+      ],
+      "limitations": "No published interventional human trials of administered MOTS-c peptide were identified; all therapeutic/administration efficacy data are from mouse and cell-culture models. Long-term safety, pharmacokinetics, and dosing in humans are uncharacterized.",
+      "research_status": "Preclinical (rodent and in vitro); human data limited to observational endogenous biomarker studies, not interventional peptide trials",
+      "references": [
+        {
+          "author": "Lee C, Zeng J, Drew BG, et al.",
+          "journal": "Cell Metabolism",
+          "year": 2015,
+          "identifier": "PMID 25738459",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25738459/"
+        },
+        {
+          "author": "Reynolds JC, Lai RW, Woodhead JST, et al.",
+          "journal": "Nature Communications",
+          "year": 2021,
+          "identifier": "PMID 33473109; doi 10.1038/s41467-020-20790-0",
+          "url": "https://www.nature.com/articles/s41467-020-20790-0"
+        },
+        {
+          "author": "Lee C, Kim KH, Cohen P",
+          "journal": "Free Radical Biology and Medicine",
+          "year": 2016,
+          "identifier": "PMID 27216708",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27216708/"
+        }
+      ]
+    },
+    "mots-c-40": {
+      "id": "mots-c-40",
+      "research_class": "Mitochondrial-derived peptide (MDP)",
+      "molecular_type": "16-amino-acid peptide encoded by a short open reading frame within the mitochondrial 12S rRNA gene",
+      "research_focus": "Mitochondrial-nuclear signaling in metabolic regulation, insulin sensitivity, and exercise physiology",
+      "mechanism_summary": "MOTS-c is translated from a short open reading frame in mitochondrial DNA and translocates to the nucleus under metabolic stress to regulate nuclear gene expression, acting as a mitochondrial-nuclear retrograde signal. Its primary described target is skeletal muscle, where it inhibits the folate-methionine cycle and downstream de novo purine biosynthesis, causing AICAR accumulation and activation of AMPK. Downstream effects include increased GLUT4-mediated glucose uptake, altered fatty acid oxidation, and modulation of inflammatory signaling (NF-kB) pathways.",
+      "research_context": "Discovered in 2015 as part of a broader class of mitochondrial-derived peptides (alongside humanin); investigated as an 'exercise mimetic' candidate and metabolic/aging regulator.",
+      "evidence_summary": "Evidence is predominantly preclinical, from rodent and cell-culture studies, with human data limited to correlational exercise-response measurements (not peptide administration trials). Key findings: MOTS-c treatment prevented age- and high-fat-diet-induced insulin resistance and obesity in mice via AMPK activation (Lee et al., 2015); MOTS-c improved physical performance, muscle homeostasis, and running capacity in aged mice, and endogenous MOTS-c rose in human skeletal muscle and plasma after acute exercise (Reynolds et al., 2021).",
+      "key_research_topics": [
+        "AMPK activation via folate-methionine/purine pathway inhibition",
+        "Skeletal muscle glucose uptake (GLUT4 translocation)",
+        "Age-related physical decline and muscle homeostasis in rodent models",
+        "Exercise-induced endogenous MOTS-c levels in humans (observational)",
+        "Insulin resistance and diet-induced obesity models"
+      ],
+      "limitations": "No published interventional human trials of administered MOTS-c peptide were identified; all therapeutic/administration efficacy data are from mouse and cell-culture models. Long-term safety, pharmacokinetics, and dosing in humans are uncharacterized.",
+      "research_status": "Preclinical (rodent and in vitro); human data limited to observational endogenous biomarker studies, not interventional peptide trials",
+      "references": [
+        {
+          "author": "Lee C, Zeng J, Drew BG, et al.",
+          "journal": "Cell Metabolism",
+          "year": 2015,
+          "identifier": "PMID 25738459",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/25738459/"
+        },
+        {
+          "author": "Reynolds JC, Lai RW, Woodhead JST, et al.",
+          "journal": "Nature Communications",
+          "year": 2021,
+          "identifier": "PMID 33473109; doi 10.1038/s41467-020-20790-0",
+          "url": "https://www.nature.com/articles/s41467-020-20790-0"
+        },
+        {
+          "author": "Lee C, Kim KH, Cohen P",
+          "journal": "Free Radical Biology and Medicine",
+          "year": 2016,
+          "identifier": "PMID 27216708",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/27216708/"
+        }
+      ]
+    },
+    "cjc-1295-no-dac": {
+      "id": "cjc-1295-no-dac",
+      "research_class": "Growth Hormone Secretagogue (GHRH Analog)",
+      "molecular_type": "Synthetic peptide (29 amino acids, tetrasubstituted GHRH(1-29) analog, no albumin-binding DAC moiety)",
+      "research_focus": "Investigated in vitro and in early-phase human pharmacology studies as a short-acting growth-hormone-releasing hormone receptor (GHRH-R) agonist intended to produce pulsatile, physiological growth hormone (GH) secretion.",
+      "mechanism_summary": "CJC-1295 No DAC (also termed Modified GRF (1-29) or tetrasubstituted GRF(1-29)) is the native-sequence core of human GHRH(1-29) carrying four amino acid substitutions (D-Ala2, Gln8, Ala15, Leu27) that confer resistance to cleavage by dipeptidyl peptidase-IV (DPP-IV), the primary enzyme responsible for rapid degradation of endogenous GHRH. It acts as an agonist at the GHRH receptor (GHRHR) on anterior pituitary somatotrophs, activating adenylyl cyclase/cAMP/PKA signaling to stimulate synthesis and pulsatile release of growth hormone, which in turn increases hepatic IGF-1 output. Because it lacks the maleimidopropionamide-lysine linker that allows the related molecule CJC-1295 (with DAC) to covalently bind Cys-34 of serum albumin, it is not retained in circulation and is cleared much faster than the DAC-conjugated form.",
+      "research_context": "The tetrasubstituted GHRH(1-29) core was characterized by Jetté et al. (2005) in the process of developing the long-acting albumin-conjugated molecule CJC-1295 (with DAC); the no-DAC (unconjugated) form shares this same stabilized peptide backbone. The isolated contribution of the D-Ala2 substitution to reduced metabolic clearance in humans was established earlier by Soule et al. (1994) using native GHRH(1-29) analogs. The rigorous human pharmacokinetic and pharmacodynamic data that exist for this compound class (Teichman et al. 2006; Ionescu & Frohman 2006) were generated using the DAC-conjugated, long-acting form of CJC-1295, not the no-DAC variant specifically.",
+      "evidence_summary": "Evidence for the tetrasubstituted DPP-IV-resistant peptide backbone itself derives from published in vitro DPP-IV stability assays and in vivo rat pituitary/GH secretion experiments (Jetté et al., 2005, rat model). Human GH/IGF-1 pharmacodynamic data (dose-dependent, multi-day GH and IGF-1 elevation; preserved pulsatile GH secretion) were obtained specifically with the DAC-conjugated, albumin-binding form of CJC-1295 in healthy adult volunteers (Teichman et al., 2006; Ionescu & Frohman, 2006). No dedicated, peer-reviewed human pharmacokinetic or pharmacodynamic study of the unconjugated (no-DAC) peptide alone has been identified in the literature search underlying this profile; commonly cited half-life figures (~30 minutes) for the no-DAC form are derived from its structural design rationale (loss of the albumin anchor) rather than from a dedicated clinical PK trial.",
+      "key_research_topics": [
+        "GHRH receptor agonism and pituitary somatotroph signaling (cAMP/PKA pathway)",
+        "DPP-IV resistance conferred by D-Ala2/Gln8/Ala15/Leu27 substitutions",
+        "Comparison of pulsatile GH secretion patterns versus sustained GH elevation (no-DAC vs. DAC-conjugated forms)",
+        "Metabolic clearance and half-life determinants of modified GHRH(1-29) analogs",
+        "Downstream IGF-1 induction via hepatic GH receptor signaling"
+      ],
+      "limitations": "Direct, dedicated human pharmacokinetic/pharmacodynamic data for the no-DAC (unconjugated) peptide specifically are sparse in the peer-reviewed literature; most rigorous human GH/IGF-1 response data available for this peptide class were generated using the distinct, longer-acting DAC-conjugated molecule and cannot be assumed to transfer quantitatively to the no-DAC form. No clinical development program advanced this specific unconjugated peptide to regulatory approval for any indication; it is not an approved drug and has research-use status only.",
+      "research_status": "Preclinical/early translational research compound; foundational peptide chemistry and DPP-IV stability data are rat/in-vitro based, while human GH-axis pharmacodynamic data in the literature pertain to the related DAC-conjugated molecule rather than this no-DAC form specifically. Not FDA-approved for any indication.",
+      "references": [
+        {
+          "author": "Jetté L, Léger R, Thibaudeau K, Benquet C, Robitaille M, Pellerin I, Paradis V, van Wyk P, Pham K, Bridon DP",
+          "journal": "Endocrinology",
+          "year": "2005",
+          "identifier": "PMID: 15817669; doi:10.1210/en.2004-1286",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/15817669/"
+        },
+        {
+          "author": "Teichman SL, Neale A, Lawrence B, Gagnon C, Castaigne JP, Frohman LA",
+          "journal": "Journal of Clinical Endocrinology & Metabolism",
+          "year": "2006",
+          "identifier": "PMID: 16352683",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16352683/"
+        },
+        {
+          "author": "Ionescu M, Frohman LA",
+          "journal": "Journal of Clinical Endocrinology & Metabolism",
+          "year": "2006",
+          "identifier": "PMID: 17018654",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17018654/"
+        },
+        {
+          "author": "Soule S, King JA, Millar RP",
+          "journal": "Journal of Clinical Endocrinology & Metabolism",
+          "year": "1994",
+          "identifier": "PMID: 7962295; doi:10.1210/jcem.79.4.7962295",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/7962295/"
+        }
+      ]
+    },
+    "nad-plus": {
+      "id": "nad-plus",
+      "research_class": "Metabolic Cofactor / Cellular Energetics Research Compound",
+      "molecular_type": "Endogenous dinucleotide coenzyme (nicotinamide adenine dinucleotide); research typically uses NAD+ itself or its biosynthetic precursors (e.g., nicotinamide riboside, nicotinamide mononucleotide)",
+      "research_focus": "Studied as a central cellular redox coenzyme and signaling substrate whose age-related decline is investigated as a potential contributor to metabolic dysfunction, and whose restoration via direct administration or precursor supplementation is studied for effects on cellular energetics, insulin sensitivity, and markers of aging.",
+      "mechanism_summary": "NAD+ serves a dual biological role: as a hydride-carrying coenzyme in hundreds of redox reactions central to glycolysis, the TCA cycle, and oxidative phosphorylation, and as a consumed co-substrate for NAD+-dependent signaling enzymes including sirtuins (SIRT1-7), poly(ADP-ribose) polymerases (PARPs), and the ectoenzyme CD38. Because NAD+ is continuously consumed by these enzymes, cellular levels depend on ongoing salvage synthesis from precursors such as nicotinamide, nicotinamide riboside (NR), and nicotinamide mononucleotide (NMN); NAD+ itself has limited direct cellular uptake, making precursor-based or formulation-based delivery strategies a central focus of the field.",
+      "research_context": "NAD+ biology in aging was framed as a major geroscience target following the 2018 review by Rajman, Chwalek and Sinclair summarizing preclinical in vivo evidence for NAD-boosting molecules across models of aging, neurodegeneration, and metabolic disease. Human translational work has focused predominantly on the precursors NR and NMN rather than on direct NAD+ administration, given bioavailability constraints; a 2021 randomized controlled trial (Yoshino/Klein group) tested NMN specifically in postmenopausal women with prediabetes, and a 2025 review (Vinten et al., Nature Metabolism) critically summarized clinical evidence for NAD+ precursor supplementation across tissues.",
+      "evidence_summary": "Preclinical rodent studies (reviewed in Rajman et al., 2018) report that restoring NAD+ levels via precursor administration in aged or diseased animals can improve markers of metabolic, cardiovascular, and neurological health and, in some models, extend lifespan; this preclinical evidence is broad but derived largely from mouse models, not humans. In humans, a randomized, placebo-controlled, double-blind trial of oral NMN (250 mg/day for 10 weeks) in postmenopausal women with prediabetes found improved skeletal-muscle insulin sensitivity and insulin signaling without a measurable increase in muscle NAD+ content itself, and without change in body composition or fasting glucose (Yoshino et al., Science, 2021). A 2025 review (Vinten et al., Nature Metabolism) concludes that evidence for an age-related NAD+ decline in human tissues is inconsistent across studies and that human clinical trials of NAD+ precursors have shown only limited and tissue-specific efficacy to date, underscoring a substantial preclinical-to-clinical translation gap.",
+      "key_research_topics": [
+        "NAD+ as a co-substrate for sirtuins, PARPs, and CD38",
+        "Age-related decline in tissue NAD+ levels: human evidence versus rodent models",
+        "Precursor pharmacology: nicotinamide riboside (NR) and nicotinamide mononucleotide (NMN) bioavailability and salvage pathway kinetics",
+        "Skeletal muscle insulin sensitivity and insulin signaling responses to NMN supplementation",
+        "Circulating versus intracellular NAD+ compartments and their distinct biomarker correlates",
+        "Translational gap between preclinical rodent efficacy and human clinical trial outcomes"
+      ],
+      "limitations": "Evidence for age-related NAD+ decline in human tissues is inconsistent across studies and not uniformly reproducible; human clinical trials of NAD+ precursors have generally shown modest, tissue-specific, or absent effects relative to the pronounced benefits reported in rodent models. Direct oral NAD+ has substantially different pharmacokinetics from its precursors and is degraded extensively in the gut before systemic absorption, so preclinical or precursor-based findings should not be assumed to generalize to direct NAD+ administration. Most rigorous human RCT data available concern specific precursors (NR, NMN) in narrow populations (e.g., postmenopausal prediabetic women) over short durations (weeks), limiting generalizability.",
+      "research_status": "Active clinical and preclinical research area; several human RCTs of NAD+ precursors have been completed, but findings are mixed and evidence for direct NAD+ administration in humans remains comparatively sparse. No NAD+ or NAD+-precursor product is FDA-approved as a drug for anti-aging or metabolic indications; supplement-marketed forms are not equivalent to the standardized research material referenced in the cited literature.",
+      "references": [
+        {
+          "author": "Rajman L, Chwalek K, Sinclair DA",
+          "journal": "Cell Metabolism",
+          "year": "2018",
+          "identifier": "PMID: 29514064; doi:10.1016/j.cmet.2018.02.011",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/29514064/"
+        },
+        {
+          "author": "Yoshino M, Yoshino J, Kayser BD, Patti GJ, Franczyk MP, Mills KF, Sindelar M, Pietka T, Patterson BW, Imai SI, Klein S",
+          "journal": "Science",
+          "year": "2021",
+          "identifier": "PMID: 33888596; doi:10.1126/science.abe9985",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8550608/"
+        },
+        {
+          "author": "Vinten KT, Trętowicz MM, Coskun E, van Weeghel M, Cantó C, Zapata-Pérez R, Janssens GE, Houtkooper RH",
+          "journal": "Nature Metabolism",
+          "year": "2025",
+          "identifier": "PMID: 41083806; doi:10.1038/s42255-025-01387-7",
+          "url": "https://www.nature.com/articles/s42255-025-01387-7"
+        }
+      ]
+    },
+    "5-amino-1mq": {
+      "id": "5-amino-1mq",
+      "research_class": "Nicotinamide N-Methyltransferase (NNMT) Inhibitor",
+      "molecular_type": "Small-molecule quinolinium compound (5-amino-1-methylquinolinium), not a peptide",
+      "research_focus": "Investigated in preclinical rodent models as a selective, membrane-permeable inhibitor of nicotinamide N-methyltransferase (NNMT), an enzyme implicated in adipocyte energy metabolism, for effects on diet-induced obesity, hepatic steatosis, glucose tolerance, and skeletal muscle regeneration.",
+      "mechanism_summary": "5-Amino-1MQ inhibits NNMT, the cytosolic enzyme that transfers a methyl group from S-adenosylmethionine (SAM) to nicotinamide (NAM), producing 1-methylnicotinamide (1-MNA). By blocking this reaction, 5-Amino-1MQ is reported to increase intracellular NAD+ and SAM availability (since less nicotinamide and methyl-donor capacity is diverted through the NNMT reaction) and to suppress lipogenesis in adipocytes; proposed downstream effects include increased NAD+-dependent SIRT1 activity. In diet-induced obese (DIO) mouse models, this mechanism has been linked to reduced fat mass accumulation, improved glucose tolerance and insulin sensitivity, and reduced hepatic triglyceride accumulation, generally without significant changes in food intake.",
+      "research_context": "5-Amino-1MQ was identified and characterized by Neelakantan, Watowich and colleagues at the University of Texas Medical Branch as part of a structure-activity relationship program developing membrane-permeable quinolinium-based NNMT inhibitors (foundational report: Neelakantan et al., Biochemical Pharmacology, 2018). The same research group subsequently extended this work to aged skeletal muscle regeneration (Neelakantan et al., 2019) and, together with collaborators, to prediabetic/metabolic phenotypes and pharmacokinetics in DIO mice (Babula et al., Diabetes, Obesity and Metabolism, 2024). Related studies from the same group examined combined NNMT inhibition with calorie-restricted diet in obese mice.",
+      "evidence_summary": "All identified evidence for 5-Amino-1MQ is preclinical, generated in cultured adipocyte/myoblast cell systems and in diet-induced obese mouse models; no human clinical trial data for this compound were identified. Key preclinical findings include: dose-dependent limitation of body weight and fat mass gain without altering food intake in DIO mice; improved oral glucose tolerance and suppressed hyperinsulinemia; reduced hepatic steatosis, liver weight, and liver triglycerides; and, in a separate line of work, activation of senescent muscle stem cells and improved regenerative capacity in aged mouse skeletal muscle following injury. In vitro selectivity assays reported no meaningful inhibition of related SAM-dependent methyltransferases, NAMPT, or SIRT1 at pharmacologically relevant concentrations, supporting mechanistic specificity for NNMT within the tested assay panel.",
+      "key_research_topics": [
+        "NNMT inhibition and adipocyte lipogenesis suppression",
+        "Body composition, fat mass, and hepatic steatosis outcomes in diet-induced obese mice",
+        "Glucose tolerance and insulin sensitivity in prediabetic mouse phenotypes",
+        "Skeletal muscle stem cell (muSC) senescence reversal and regenerative capacity in aged mice",
+        "Selectivity profiling against related methyltransferases and NAD+ salvage pathway enzymes",
+        "Pharmacokinetics and tissue distribution following subcutaneous dosing in mice",
+        "Combined NNMT inhibition with calorie-restricted diet and effects on gut microbiome composition"
+      ],
+      "limitations": "All available evidence is derived from in vitro cell culture systems and rodent (primarily mouse) models; no human pharmacokinetic, safety, or efficacy data for 5-Amino-1MQ were identified in the literature reviewed. The compound has poor oral bioavailability in mice (subcutaneous dosing is typically used in murine studies), and pharmacokinetic behavior has been reported to differ between species (e.g., rats versus mice), which constrains extrapolation. Long-term safety, chronic dosing tolerability, and carcinogenicity/genotoxicity data in any species were not identified in the sources reviewed for this profile.",
+      "research_status": "Early-stage preclinical research compound; used as a pharmacological tool/probe molecule for NNMT target validation in academic research settings. Not approved by any regulatory agency for human use, and no registered human clinical trials were identified.",
+      "references": [
+        {
+          "author": "Neelakantan H, Vance V, Wetzel MD, Wang HL, McHardy SF, Finnerty CC, Hommel JD, Watowich SJ",
+          "journal": "Biochemical Pharmacology",
+          "year": "2018",
+          "identifier": "PMID: 29155147; doi:10.1016/j.bcp.2017.11.007",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5826726/"
+        },
+        {
+          "author": "Neelakantan H, Brightwell CR, Graber TG, Maroto R, Wang HYL, McHardy SF, Papaconstantinou J, Fry CS, Watowich SJ",
+          "journal": "Biochemical Pharmacology",
+          "year": "2019",
+          "identifier": "PMID: 30753815; doi:10.1016/j.bcp.2019.02.008",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0006295219300462"
+        },
+        {
+          "author": "Babula JAJ, Bui D, Stevenson HL, Watowich SJ, Neelakantan H",
+          "journal": "Diabetes, Obesity and Metabolism",
+          "year": "2024",
+          "identifier": "PMID: 39161060; doi:10.1111/dom.15879",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/39161060/"
+        }
+      ]
+    },
+    "bpc-157-tb-500": {
+      "id": "bpc-157-tb-500",
+      "research_class": "Regenerative / Tissue-Repair Peptide Combination",
+      "molecular_type": "Peptide blend: BPC-157 (synthetic gastric pentadecapeptide, 15 amino acids) + TB-500 (synthetic fragment of Thymosin beta-4, a 43-amino-acid actin-binding protein)",
+      "research_focus": "Preclinical investigation of combined angiogenic, cytoprotective, and actin-mediated cell-migration pathways relevant to tendon, ligament, muscle, and soft-tissue repair models.",
+      "mechanism_summary": "BPC-157 is studied for modulation of the nitric oxide (NO) system via the Akt-eNOS axis, VEGFR2-mediated angiogenesis, ERK1/2 signaling, and upregulation of growth-hormone receptor expression in tendon fibroblasts, with reported cytoprotective and anti-inflammatory activity across gastrointestinal and musculoskeletal injury models. TB-500 is the synthetic analogue of the LKKTETQ actin-binding domain of Thymosin beta-4; the parent molecule sequesters G-actin, promotes keratinocyte and endothelial cell migration, reduces myofibroblast-driven scarring/fibrosis, and has documented roles in dermal wound healing and cardiac progenitor cell mobilization. Combination protocols are hypothesized (not established) to act on complementary steps of the repair cascade -- BPC-157 upstream on vascularization/growth-factor signaling, TB-500 on cytoskeletal reorganization and cell motility -- but dedicated combination pharmacology data are sparse.",
+      "research_context": "Both peptides originate from distinct discovery programs: BPC-157 was isolated from human gastric juice (Sikiric et al., early 1990s) and studied predominantly in rodent tendon-transection, muscle-crush, and GI-ulcer models. TB-500 derives from decades of Thymosin beta-4 research in wound healing, corneal repair, and cardiac regeneration. The pairing (colloquially the 'Wolverine stack' in non-academic peptide-research communities) reflects mechanistic-complementarity reasoning rather than a body of peer-reviewed combination trials; a 2026 scoping review found only a single included study directly evaluating TB-500 itself, with the bulk of Thymosin beta-4 literature using the full-length native protein, not the TB-500 fragment.",
+      "evidence_summary": "Evidence for BPC-157 is exclusively preclinical: rodent Achilles-tendon transection, muscle-crush, and ligament models report accelerated healing, increased tendon fibroblast outgrowth, angiogenesis, and GH-receptor upregulation. A 2025 narrative review (McGuire et al.) identified only three small human pilot studies (intra-articular knee pain, interstitial cystitis, IV safety/pharmacokinetics) with no controlled efficacy trials. TB-500/Thymosin beta-4 evidence is broader for the parent molecule (in vitro, animal wound-healing, and Phase II dermal-wound human trials) but a 2026 scoping review (McGuire, Hughes, Maak, Cushman; 80 studies from 1,772 records) found direct musculoskeletal tissue categories (tendon, ligament, muscle, cartilage, spine/disc) comparatively sparse, human evidence concentrated in ocular/cornea and skin/wound settings, and only one study evaluating TB-500 specifically. No peer-reviewed studies were identified that test the BPC-157 + TB-500 combination directly in a controlled design; claims of synergy in commercial/community sources are mechanistic extrapolation, not experimental confirmation.",
+      "key_research_topics": [
+        "Angiogenesis and VEGF/VEGFR2 signaling in tendon and muscle repair",
+        "Nitric oxide (NO) pathway and Akt-eNOS modulation (BPC-157)",
+        "G-actin sequestration and cytoskeletal-driven cell migration (TB-500/Thymosin beta-4)",
+        "Tendon-to-bone and ligament healing models",
+        "Anti-inflammatory and anti-fibrotic (myofibroblast-reducing) activity",
+        "Gastrointestinal mucosal cytoprotection (BPC-157-specific)",
+        "Cardiac and corneal repair research (Thymosin beta-4 parent molecule)"
+      ],
+      "limitations": "Human data for BPC-157 are limited to three small uncontrolled pilot studies; no randomized controlled trials exist. TB-500-specific (versus full-length Thymosin beta-4) evidence is minimal -- a 2026 scoping review located only one study directly testing TB-500. No controlled study has evaluated the two-peptide combination; synergy claims are mechanistic hypotheses. Neither compound is approved by the FDA, EMA, or comparable regulatory bodies for any clinical indication; BPC-157 is explicitly listed as prohibited by WADA in some sport contexts. Long-term safety, dosing standardization, and pharmacokinetics in humans remain uncharacterized.",
+      "research_status": "Preclinical (animal/in vitro) for both compounds individually; no controlled human efficacy trials; no peer-reviewed data on the combination. Research-use-only status -- not approved for human therapeutic use.",
+      "references": [
+        {
+          "author": "McGuire FP, Martinez R, Lenz A, Skinner L, Cushman DM",
+          "journal": "Current Reviews in Musculoskeletal Medicine",
+          "year": "2025",
+          "identifier": "PMID: 40789979; DOI: 10.1007/s12178-025-09990-7",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/40789979/"
+        },
+        {
+          "author": "Staresinic M, Sebecic B, Patrlj L, Jadrijevic S, Suknaic S, Perovic D, et al.",
+          "journal": "Journal of Orthopaedic Research",
+          "year": "2003",
+          "identifier": "PMID: 14554208",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/14554208/"
+        },
+        {
+          "author": "Seiwerth S, Rucman R, Turkovic B, Sever M, Klicek R, Radic B, et al.",
+          "journal": "Current Pharmaceutical Design",
+          "year": "2018",
+          "identifier": "PMID: 29998800",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/29998800/"
+        },
+        {
+          "author": "Goldstein AL, Hannappel E, Sosne G, Kleinman HK",
+          "journal": "Expert Opinion on Biological Therapy",
+          "year": "2012",
+          "identifier": "PMID: 22074294",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22074294/"
+        },
+        {
+          "author": "McGuire F, Hughes E, Maak T, Cushman DM",
+          "journal": "Applied Sciences",
+          "year": "2026",
+          "identifier": "DOI: 10.3390/app16126202",
+          "url": "https://www.mdpi.com/2076-3417/16/12/6202"
+        }
+      ]
+    },
+    "epithalon": {
+      "id": "epithalon",
+      "research_class": "Longevity / Neuroendocrine Bioregulator Peptide",
+      "molecular_type": "Synthetic tetrapeptide, Ala-Glu-Asp-Gly (AEDG), CAS 307297-39-8, synthetic analogue of the natural pineal gland extract Epithalamin/Epithalamine",
+      "research_focus": "Cellular senescence and telomerase biology, pineal gland function and melatonin regulation, and long-term geroprotective outcomes in aged model organisms and observational human cohorts.",
+      "mechanism_summary": "Epithalon is studied for induction of telomerase catalytic subunit expression and enzymatic activity in telomerase-negative human somatic cell cultures, associated with telomere elongation and extended replicative capacity beyond the normal Hayflick limit in vitro. A proposed direct peptide-chromatin interaction (short acidic peptides binding AT-rich promoter regions, including the hTERT promoter) has been advanced by the originating research group as a mechanism distinct from classical receptor-ligand signaling, though this 'peptide bioregulation' model has not been independently mechanistically confirmed outside the Khavinson research network. Separately, Epithalon/Epithalamin is studied for restoration of age-related decline in pineal melatonin synthesis, with downstream effects reported on circadian rhythm, antioxidant enzyme activity (SOD, glutathione peroxidase), and neuroendocrine-immune parameters in aged animals and elderly human subjects.",
+      "research_context": "Epithalon was developed by Prof. Vladimir Khavinson and colleagues at the St. Petersburg Institute of Bioregulation and Gerontology (Russia) as a synthetic short-peptide mimic of the natural bovine pineal extract Epithalamin/Epithalamine. The research program spans in vitro telomerase/chromatin studies, rodent and invertebrate lifespan/tumor-incidence experiments, and multi-year observational human cohorts in elderly and geriatric populations, largely originating from one research group and its direct collaborators in Russia and Ukraine; independent replication outside this network is limited.",
+      "evidence_summary": "In vitro: Khavinson, Bondarev, and Butyugov (2003) reported that Epithalon induced telomerase catalytic subunit expression, enzymatic activity, and telomere elongation in telomerase-negative human fetal fibroblast cultures, a finding frequently cited as the mechanistic anchor for telomerase claims; a related 2004 study reported peptide-associated overcoming of the somatic-cell division limit. Animal studies: multiple Anisimov/Khavinson rodent studies (CBA mice, SHR mice, HER-2/neu transgenic mice, Drosophila) reported increased maximum lifespan (on the order of 10-25% in some cohorts) and reduced spontaneous or induced tumor incidence (mammary, colon) with cyclic Epitalon/Epithalamin administration, alongside comparable studies showing melatonin itself increased tumor incidence in some models -- underscoring model-dependent and non-uniform effects. Human evidence: is exclusively observational/uncontrolled, most notably a 6-8 year follow-up of 266 elderly persons (Khavinson & Morozov, 2003) reporting reduced mortality with Thymalin and/or Epithalamin courses, and a 12-year follow-up in elderly coronary-disease patients (Korkushko et al., 2006) reporting improved cardiovascular outcomes with Epithalamin added to standard care. These human studies used the natural extract (Epithalamin), not necessarily the synthetic tetrapeptide, were unblinded, lacked placebo control, and originate from a single research network.",
+      "key_research_topics": [
+        "Telomerase activation and telomere elongation in human somatic cell cultures",
+        "Chromatin remodeling / direct peptide-DNA interaction hypothesis (hTERT promoter)",
+        "Pineal gland melatonin synthesis and circadian rhythm regulation",
+        "Lifespan extension and spontaneous tumor incidence in rodent and invertebrate models",
+        "Oxidative stress markers (SOD, glutathione peroxidase, lipid peroxidation) in aged tissue",
+        "Long-term observational cohorts in elderly and cardiovascular-aging human populations"
+      ],
+      "limitations": "The overwhelming majority of Epithalon/Epithalamin publications originate from one research group (Khavinson and close collaborators) with limited independent replication. Human data are observational and uncontrolled, without randomization, blinding, or placebo arms in the cited long-term cohorts. In vitro telomerase induction has not been confirmed by an independently mechanistically distinct pathway, and the proposed direct-chromatin-binding model remains a hypothesis specific to this research network. Telomerase reactivation is a hallmark of most human cancers, so a chronic risk-benefit relationship in humans is not established despite reduced tumor incidence reported in some rodent cohorts. Epithalon is not approved by the FDA, EMA, or any comparable regulatory body for any indication and is distributed only as a research compound.",
+      "research_status": "Preclinical (in vitro cell culture, rodent/invertebrate lifespan studies) plus long-term uncontrolled human observational cohorts using the related natural extract Epithalamin; no randomized controlled human clinical trials of the synthetic tetrapeptide have been identified. Research-use-only status.",
+      "references": [
+        {
+          "author": "Khavinson VKh, Bondarev IE, Butyugov AA",
+          "journal": "Bulletin of Experimental Biology and Medicine",
+          "year": "2003",
+          "identifier": "PMID: 12937682; DOI: 10.1023/A:1025493705728",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12937682/"
+        },
+        {
+          "author": "Khavinson VK, Morozov VG",
+          "journal": "Neuroendocrinology Letters",
+          "year": "2003",
+          "identifier": "PMID: 14523363",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/14523363/"
+        },
+        {
+          "author": "Korkushko OV, Khavinson VK, Shatilo VB, Antonyuk-Shcheglova IA",
+          "journal": "Bulletin of Experimental Biology and Medicine",
+          "year": "2006",
+          "identifier": "PMID: 17426848; DOI: 10.1007/s10517-006-0365-z",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/17426848/"
+        },
+        {
+          "author": "Anisimov VN, Khavinson VK, Popovich IG, Zabezhinski MA, Alimova IN, Rosenfeld SV, et al.",
+          "journal": "Biogerontology",
+          "year": "2003",
+          "identifier": "PMID: 14501183; DOI: 10.1023/A:1025114230714",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/14501183/"
+        },
+        {
+          "author": "Anisimov VN, Khavinson VK, Mikhalski AI, Yashin AI",
+          "journal": "Mechanisms of Ageing and Development",
+          "year": "2001",
+          "identifier": "PMID: 11163623; DOI: 10.1016/S0047-6374(00)00184-6",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11163623/"
+        }
+      ]
+    }
+  }
+}

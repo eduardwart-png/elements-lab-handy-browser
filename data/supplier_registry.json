@@ -1,0 +1,7 @@
+{
+  "_schema": {
+    "description": "Registry of qualified peptide/compound suppliers under evaluation",
+    "fields": ["supplier_id", "name", "country", "type", "gmp_certified", "approved", "qualification_date", "notes"]
+  },
+  "suppliers": []
+}

@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "description": "Internal research profiles for LEGAL_HOLD compounds — NOT for public website rendering",
+    "access": "INTERNAL_ONLY",
+    "note": "These compounds are excluded from all public pages, sitemap, navigation, and product grids until written legal clearance is obtained."
+  },
+  "profiles": {
+    "retatrutide": {
+      "id": "retatrutide",
+      "release_status": "LEGAL_HOLD",
+      "research_class": "Triple-Hormone-Receptor Agonist Peptide (GIP/GLP-1/GCG)",
+      "molecular_type": "Recombinant single-chain 30-amino-acid peptide (LY3437943) with extended serum half-life through albumin binding",
+      "research_focus": "Retatrutide is under investigation in Phase 3 trials for treatment of obesity and type 2 diabetes.",
+      "mechanism_summary": "The peptide acts simultaneously on GIP, GLP-1, and glucagon receptors (GCGR). GIP and GLP-1 activation promotes insulin secretion and slows gastric emptying, while GCGR activation produces moderate glucagon activation that stimulates fat oxidation. This triple-agonism combination produced significantly greater weight reduction in clinical trials than single GLP-1 or GIP agonists.",
+      "research_context": "Retatrutide (LY3437943) was developed by Eli Lilly and is currently active in Phase 3 trials (SURMOUNT-4/5, TRIUMPH). Approved in the US only within clinical trials, not as a commercial product.",
+      "evidence_summary": "Clinical evidence: Phase 2 study (Jastreboff et al., NEJM 2023) showed dose-dependent weight reduction (up to 24.5% at 12 mg). Phase 2b/3 sub-study (Sanyal et al., Nature Medicine 2024) reduced liver fat by up to 86%. Preclinical data (Coskun et al., Cell Metabolism 2022) confirm the triple-agonist profile in animal models.",
+      "key_research_topics": ["Triple-hormone-receptor agonism", "Obesity therapy", "Type 2 diabetes", "NAFLD/MASLD", "Weight reduction", "Glycemic control"],
+      "limitations": "Long-term safety data (>48 weeks) are limited. Study populations were predominantly obese with type 2 diabetes; data on obesity alone without diabetes are limited. No long-term data in severe renal or cardiovascular disease.",
+      "research_status": "Clinical (Phase 3 ongoing, not yet approved)",
+      "references": [
+        {"author": "Jastreboff AM, et al.", "journal": "New England Journal of Medicine", "year": 2023, "identifier": "PMID 37733238; doi:10.1056/NEJMoa2301972", "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2301972"},
+        {"author": "Sanyal AJ, et al.", "journal": "Nature Medicine", "year": 2024, "identifier": "doi:10.1038/s41591-024-02931-2", "url": "https://www.nature.com/articles/s41591-024-02931-2"},
+        {"author": "Coskun T, et al.", "journal": "Cell Metabolism", "year": 2022, "identifier": "PMID 35985340; doi:10.1016/j.cmet.2022.07.014", "url": "https://pubmed.ncbi.nlm.nih.gov/35985340/"}
+      ]
+    },
+    "semaglutide": {
+      "id": "semaglutide",
+      "release_status": "LEGAL_HOLD",
+      "research_class": "GLP-1 Receptor Agonist Peptide",
+      "note": "GLP-1 receptor agonist — approved medicinal product (Ozempic/Wegovy) in multiple jurisdictions. Research profile not elaborated pending legal clearance. NOT publicly listed."
+    },
+    "tirzepatide": {
+      "id": "tirzepatide",
+      "release_status": "LEGAL_HOLD",
+      "research_class": "GIP/GLP-1 Dual Receptor Agonist Peptide",
+      "note": "Dual agonist — approved medicinal product (Mounjaro/Zepbound) in multiple jurisdictions. Research profile not elaborated pending legal clearance. NOT publicly listed."
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "CROSS_BORDER_TAX_REVIEW_REQUIRED",
+  "note": "Ort der Geschäftsleitung/DE-PL Anknüpfung ungeprüft — Hermes simuliert keine Steuerrechtsfreigabe.",
+  "de_pl_nexus_review": "NOT_STARTED",
+  "vat_oss_review": "NOT_STARTED",
+  "customs_duty_review": "NOT_STARTED",
+  "intrastat_review": "NOT_STARTED",
+  "external_tax_advisor_required": true,
+  "_meta": {
+    "schema_version": "v6",
+    "last_updated": "2026-08-29"
+  }
+}

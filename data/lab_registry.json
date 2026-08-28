@@ -1,0 +1,7 @@
+{
+  "_schema": {
+    "description": "Registry of approved independent testing laboratories for batch certification",
+    "fields": ["lab_id", "name", "country", "accreditation_body", "iso_17025", "scope_peptides", "contact", "approved", "notes"]
+  },
+  "labs": []
+}

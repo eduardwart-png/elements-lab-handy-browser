@@ -1,0 +1,35 @@
+[
+  {
+    "country_code": "DE",
+    "country_name": "Germany",
+    "sales_allowed": null,
+    "legal_review": "NOT_STARTED",
+    "regulatory_status": "Research peptides / chemicals — status depends on compound and end use",
+    "import_restrictions": null,
+    "vat_rate": 0.19,
+    "requires_license": null,
+    "notes": "De facto export market — legal entity likely PL. Cross-border implications unreviewed."
+  },
+  {
+    "country_code": "PL",
+    "country_name": "Poland",
+    "sales_allowed": null,
+    "legal_review": "NOT_STARTED",
+    "regulatory_status": "Planned legal entity jurisdiction — full compliance review required",
+    "import_restrictions": null,
+    "vat_rate": 0.23,
+    "requires_license": null,
+    "notes": "Planned domicile of legal entity. Polish law on research chemicals requires specialist review."
+  },
+  {
+    "country_code": "EU_GENERIC",
+    "country_name": "EU (generic placeholder)",
+    "sales_allowed": null,
+    "legal_review": "NOT_STARTED",
+    "regulatory_status": "Each member state reviewed individually before sales",
+    "import_restrictions": null,
+    "vat_rate": null,
+    "requires_license": null,
+    "notes": "Placeholder row. Each target country requires individual legal review before enabling sales."
+  }
+]
