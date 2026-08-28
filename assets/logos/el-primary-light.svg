@@ -1,10 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 160" width="620" height="160">
-<g transform="translate(26 30)"><rect x="0" y="0" width="20.00" height="100.00" rx="3.2" fill="#2A2F36"/>
-<rect x="0" y="0" width="70.00" height="20.00" rx="3.2" fill="#2A2F36"/>
-<rect x="0" y="40.00" width="52.00" height="20.00" rx="3.2" fill="#2A2F36"/>
-<rect x="52.00" y="0" width="20.00" height="100.00" rx="3.2" fill="#0D5B6B"/>
-<rect x="0" y="80.00" width="72.00" height="20.00" rx="3.2" fill="#2A2F36"/>
-<rect x="52.00" y="80.00" width="48.00" height="20.00" rx="3.2" fill="#0D5B6B"/></g>
+<g transform="translate(26 30)"><defs><mask id="elmaske100000"><rect x="0" y="0" width="100.00" height="100.00" fill="white"/><polygon points="48.00,55.93 47.33,55.56 32.33,66.48 32.00,67.59 39.17,73.24 40.58,73.15 47.92,67.22" fill="black"/></mask></defs><polygon points="48.58,7.31 18.75,28.43 18.92,74.17 46.08,94.63 55.00,87.59 28.67,68.43 28.00,58.43 47.67,43.80 48.08,31.67 28.67,43.98 28.17,34.91 48.58,19.81" fill="#2A2F36" mask="url(#elmaske100000)"/><polygon points="59.58,12.59 50.25,19.91 50.33,80.56 55.08,84.91 80.00,67.04 79.00,54.35 59.83,67.22" fill="#0D5B6B"/></g>
 <text x="166" y="76" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="40" font-weight="700" letter-spacing="7" fill="#2A2F36">ELEMENTS</text>
 <text x="166" y="120" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="40" font-weight="700" letter-spacing="7" fill="#2A2F36">LABS</text>
 </svg>
