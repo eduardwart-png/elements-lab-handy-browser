@@ -1,0 +1,18 @@
+ELEMENTS LABS — Handy-Review
+
+Ich habe dir die fertige Seite + wichtigste Screenshots aufs Handy geschickt, damit du direkt in Telegram erklären kannst, was dich stört — z.B. an den Ampullen/Vials.
+
+Du kannst einfach dort antworten, am besten als Sprachnachricht oder kurze Stichpunkte:
+- Welche Vials/Ampullen gefallen dir nicht?
+- Was wirkt noch künstlich oder billig?
+- Soll die Richtung eher echte Pharma-/Laborglas-Fotografie, Kosmetik/Parfum oder Premium-Tech werden?
+
+Fertige Seite als Datei:
+MEDIA:C:/Users/eduar/elements-lab-flagship/_standalone.html
+
+Wichtige Screenshots:
+MEDIA:C:/Users/eduar/elements-lab-flagship/evidence/screenshots/mobile-home.png
+MEDIA:C:/Users/eduar/elements-lab-flagship/evidence/screenshots/desktop-home.png
+MEDIA:C:/Users/eduar/elements-lab-flagship/evidence/screenshots/vial-close-up.png
+MEDIA:C:/Users/eduar/elements-lab-flagship/evidence/screenshots/product-grid.png
+MEDIA:C:/Users/eduar/elements-lab-flagship/evidence/screenshots/packaging.png

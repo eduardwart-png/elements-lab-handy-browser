@@ -8,12 +8,14 @@ from pathlib import Path
 from textwrap import dedent
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import ImageChops
 
 ROOT = Path('C:/Users/eduar/elements-lab-flagship')
 ASSETS = ROOT / 'assets'
 LOGOS = ASSETS / 'logos'
 PRODUCTS_DIR = ASSETS / 'products'
 SCENES = ASSETS / 'scenes'
+BASE = ASSETS / 'base-photos-final'
 for p in [ASSETS, LOGOS, PRODUCTS_DIR, SCENES, ROOT / 'qa', ROOT / 'evidence', ROOT / 'evidence' / 'screenshots']:
     p.mkdir(parents=True, exist_ok=True)
 
@@ -23,6 +25,20 @@ OFF_WHITE = '#F7F7F8'
 PETROL = '#0D5B6B'
 MUTED = '#6B747D'
 LINE = '#D8DDE0'
+
+IMG_DIR = ROOT / 'img'
+IMG_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def write_qr_codes(products):
+    import qrcode
+    for p in products:
+        qr_path = ROOT / p['qr']
+        qr_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = f"https://eduardwart-png.github.io/elements-lab-handy-browser/#batch={p['batch']}"
+        img = qrcode.make(payload, border=2)
+        img = img.resize((300, 300))
+        img.save(qr_path)
 
 PRODUCTS = [
     dict(id='bpc-157', num='01', name='BPC-157', concentration='5 mg', price='24,90 €', code='EL-BPC-005', batch='EL-BPC5-26001', category='Tissue Research', featured=True, desc='Batch-orientierte In-vitro-Forschungsware für Tissue-Biology-Modelle.'),
@@ -99,71 +115,128 @@ def add_noise(img: Image.Image, amount=9, alpha=18):
     return Image.alpha_composite(img.convert('RGBA'), noise)
 
 
-def draw_el_mark(draw: ImageDraw.ImageDraw, x, y, s, dark=True):
-    e = rgba(GRAPHITE if dark else OFF_WHITE, 255)
-    l = rgba(PETROL, 255)
-    u = max(2, int(s / 18))
-    # Geometric E
-    draw.rounded_rectangle([x, y, x + s * 0.19, y + s], radius=u, fill=e)
-    draw.rounded_rectangle([x, y, x + s * 0.58, y + s * 0.18], radius=u, fill=e)
-    draw.rounded_rectangle([x, y + s * 0.41, x + s * 0.49, y + s * 0.59], radius=u, fill=e)
-    draw.rounded_rectangle([x, y + s * 0.82, x + s * 0.58, y + s], radius=u, fill=e)
-    # Geometric L
-    lx = x + s * 0.69
-    draw.rounded_rectangle([lx, y, lx + s * 0.18, y + s], radius=u, fill=l)
-    draw.rounded_rectangle([lx, y + s * 0.82, x + s * 1.18, y + s], radius=u, fill=l)
+def draw_el_mark(d: ImageDraw.ImageDraw, x, y, s, dark=True):
+    """Draw the TRUE interlocking EL monogram (v3): E spine+arms fused with L's
+    vertical stroke and shared bottom bar, not two separate side-by-side blocks."""
+    ink_e = rgba(OFF_WHITE, 255) if dark else rgba(GRAPHITE, 255)
+    ink_l = rgba(PETROL, 255)
+    bar = s * 0.20
+    r = max(2, int(bar * 0.16))
+
+    d.rounded_rectangle([x, y, x + bar, y + s], radius=r, fill=ink_e)
+    d.rounded_rectangle([x, y, x + s * 0.70, y + bar], radius=r, fill=ink_e)
+    mid_y = y + s / 2 - bar / 2
+    d.rounded_rectangle([x, mid_y, x + s * 0.52, mid_y + bar], radius=r, fill=ink_e)
+
+    l_x = x + s * 0.52
+    d.rounded_rectangle([l_x, y, l_x + bar, y + s], radius=r, fill=ink_l)
+
+    bottom_y = y + s - bar
+    split_x = x + s * 0.52
+    d.rounded_rectangle([x, bottom_y, split_x + bar, y + s], radius=r, fill=ink_e)
+    d.rounded_rectangle([split_x, bottom_y, x + s, y + s], radius=r, fill=ink_l)
+
+
+def el_mark_svg_path(s=100):
+    bar = s * 0.20
+    r = round(bar * 0.16, 2)
+    l_x = s * 0.52
+    mid_y = s / 2 - bar / 2
+    bottom_y = s - bar
+    split_x = s * 0.52
+    parts = [
+        f'<rect x="0" y="0" width="{bar:.2f}" height="{s:.2f}" rx="{r}" fill="{{e}}"/>',
+        f'<rect x="0" y="0" width="{s*0.70:.2f}" height="{bar:.2f}" rx="{r}" fill="{{e}}"/>',
+        f'<rect x="0" y="{mid_y:.2f}" width="{s*0.52:.2f}" height="{bar:.2f}" rx="{r}" fill="{{e}}"/>',
+        f'<rect x="{l_x:.2f}" y="0" width="{bar:.2f}" height="{s:.2f}" rx="{r}" fill="{{l}}"/>',
+        f'<rect x="0" y="{bottom_y:.2f}" width="{split_x+bar:.2f}" height="{bar:.2f}" rx="{r}" fill="{{e}}"/>',
+        f'<rect x="{split_x:.2f}" y="{bottom_y:.2f}" width="{s-split_x:.2f}" height="{bar:.2f}" rx="{r}" fill="{{l}}"/>',
+    ]
+    return '\n'.join(parts)
 
 
 def logo_svg(kind='primary', dark=False):
-    bg = 'none'
+    """kind: primary (icon+wordmark horizontal, ~230px wide for desktop header),
+    secondary (icon over wordmark stacked), icon (mark only, for mobile), badge (seal)."""
     ink = OFF_WHITE if dark else GRAPHITE
     mark_e = OFF_WHITE if dark else GRAPHITE
     mark_l = PETROL
+    mark_size = 100
+
     if kind == 'icon':
-        w, h = 180, 180; mark_x, mark_y, s = 38, 34, 86; text = ''
-    elif kind == 'secondary':
-        w, h = 380, 260; mark_x, mark_y, s = 136, 26, 86; text = '<text x="190" y="184" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="31" font-weight="800" letter-spacing="7" fill="%s">ELEMENTS</text><text x="190" y="220" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="31" font-weight="800" letter-spacing="7" fill="%s">LABS</text>' % (ink, ink)
-    elif kind == 'badge':
-        w, h = 260, 260; mark_x, mark_y, s = 78, 62, 80; text = '<circle cx="130" cy="130" r="116" fill="none" stroke="%s" stroke-width="2"/><text x="130" y="186" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" letter-spacing="4" fill="%s">ELEMENTS</text><text x="130" y="214" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" letter-spacing="4" fill="%s">LABS</text>' % (PETROL, ink, ink)
-    else:
-        w, h = 520, 150; mark_x, mark_y, s = 34, 30, 70; text = '<text x="158" y="68" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="8" fill="%s">ELEMENTS</text><text x="158" y="112" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="8" fill="%s">LABS</text>' % (ink, ink)
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
-<rect width="100%" height="100%" fill="{bg}"/>
-<g transform="translate({mark_x} {mark_y})">
-<rect x="0" y="0" width="16" height="{s}" rx="2" fill="{mark_e}"/>
-<rect x="0" y="0" width="50" height="16" rx="2" fill="{mark_e}"/>
-<rect x="0" y="{s*0.41:.1f}" width="43" height="16" rx="2" fill="{mark_e}"/>
-<rect x="0" y="{s-16}" width="50" height="16" rx="2" fill="{mark_e}"/>
-<rect x="{s*0.66:.1f}" y="0" width="16" height="{s}" rx="2" fill="{mark_l}"/>
-<rect x="{s*0.66:.1f}" y="{s-16}" width="50" height="16" rx="2" fill="{mark_l}"/>
-</g>{text}
+        w, h = 140, 140
+        mx, my = 20, 20
+        mark = el_mark_svg_path(mark_size).format(e=mark_e, l=mark_l)
+        return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
+<g transform="translate({mx} {my})">{mark}</g>
 </svg>'''
-    return svg
+
+    if kind == 'secondary':
+        w, h = 360, 260
+        mx = (w - mark_size) / 2
+        my = 20
+        mark = el_mark_svg_path(mark_size).format(e=mark_e, l=mark_l)
+        return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
+<g transform="translate({mx:.1f} {my})">{mark}</g>
+<text x="{w/2}" y="182" text-anchor="middle" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="30" font-weight="700" letter-spacing="6" fill="{ink}">ELEMENTS</text>
+<text x="{w/2}" y="216" text-anchor="middle" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="30" font-weight="700" letter-spacing="6" fill="{ink}">LABS</text>
+</svg>'''
+
+    if kind == 'badge':
+        w, h = 280, 280
+        mark_size2 = 84
+        mx = (w - mark_size2) / 2
+        my = 56
+        mark = el_mark_svg_path(mark_size2).format(e=mark_e, l=mark_l)
+        return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
+<circle cx="{w/2}" cy="{h/2}" r="128" fill="none" stroke="{PETROL}" stroke-width="2"/>
+<g transform="translate({mx:.1f} {my})">{mark}</g>
+<text x="{w/2}" y="206" text-anchor="middle" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="4" fill="{ink}">ELEMENTS</text>
+<text x="{w/2}" y="230" text-anchor="middle" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="4" fill="{ink}">LABS</text>
+</svg>'''
+
+    w, h = 620, 160
+    mx, my = 26, 30
+    mark = el_mark_svg_path(mark_size).format(e=mark_e, l=mark_l)
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
+<g transform="translate({mx} {my})">{mark}</g>
+<text x="166" y="76" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="40" font-weight="700" letter-spacing="7" fill="{ink}">ELEMENTS</text>
+<text x="166" y="120" font-family="'Space Grotesk','Segoe UI',Arial,sans-serif" font-size="40" font-weight="700" letter-spacing="7" fill="{ink}">LABS</text>
+</svg>'''
 
 
 def logo_png(path: Path, kind='primary', dark=False):
-    if kind == 'icon':
-        size = (512, 512); mark = (150, 118, 230)
-    elif kind == 'secondary':
-        size = (900, 620); mark = (345, 70, 210)
-    elif kind == 'badge':
-        size = (720, 720); mark = (250, 150, 220)
-    else:
-        size = (1300, 380); mark = (95, 82, 182)
+    svg_map = {'icon': (280, 280), 'secondary': (720, 520), 'badge': (720, 720), 'primary': (1240, 320)}
+    size = svg_map.get(kind, (1240, 320))
+    scale = size[0] / {'icon': 140, 'secondary': 360, 'badge': 280, 'primary': 620}[kind]
     img = Image.new('RGBA', size, (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     ink = rgba(OFF_WHITE if dark else GRAPHITE, 255)
-    draw_el_mark(d, mark[0], mark[1], mark[2], dark=not dark)
-    if kind == 'badge':
-        d.ellipse([42, 42, size[0]-42, size[1]-42], outline=rgba(PETROL, 255), width=6)
-        text_center(d, (size[0]//2, 505), 'ELEMENTS', font(56, True), ink)
-        text_center(d, (size[0]//2, 585), 'LABS', font(56, True), ink)
+
+    if kind == 'icon':
+        mx, my, ms = 20 * scale, 20 * scale, 100 * scale
+        draw_el_mark(d, mx, my, ms, dark=dark)
     elif kind == 'secondary':
-        text_center(d, (size[0]//2, 430), 'ELEMENTS', font(68, True), ink)
-        text_center(d, (size[0]//2, 515), 'LABS', font(68, True), ink)
-    elif kind == 'primary':
-        d.text((385, 112), 'ELEMENTS', font=font(92, True), fill=ink)
-        d.text((385, 220), 'LABS', font=font(92, True), fill=ink)
+        ms = 100 * scale
+        mx = (size[0] - ms) / 2
+        my = 20 * scale
+        draw_el_mark(d, mx, my, ms, dark=dark)
+        text_center(d, (size[0] // 2, int(182 * scale)), 'ELEMENTS', font(int(30 * scale), True), ink)
+        text_center(d, (size[0] // 2, int(216 * scale)), 'LABS', font(int(30 * scale), True), ink)
+    elif kind == 'badge':
+        ms = 84 * scale
+        mx = (size[0] - ms) / 2
+        my = 56 * scale
+        d.ellipse([size[0] * 0.5 - 128 * scale, size[1] * 0.5 - 128 * scale, size[0] * 0.5 + 128 * scale, size[1] * 0.5 + 128 * scale], outline=rgba(PETROL, 255), width=max(2, int(2 * scale)))
+        draw_el_mark(d, mx, my, ms, dark=dark)
+        text_center(d, (size[0] // 2, int(206 * scale)), 'ELEMENTS', font(int(19 * scale), True), ink)
+        text_center(d, (size[0] // 2, int(230 * scale)), 'LABS', font(int(19 * scale), True), ink)
+    else:
+        mx, my, ms = 26 * scale, 30 * scale, 100 * scale
+        draw_el_mark(d, mx, my, ms, dark=dark)
+        d.text((166 * scale, 46 * scale), 'ELEMENTS', font=font(int(40 * scale), True), fill=ink)
+        d.text((166 * scale, 90 * scale), 'LABS', font=font(int(40 * scale), True), fill=ink)
+
     img.save(path)
 
 
@@ -179,231 +252,280 @@ def paste_qr(base: Image.Image, product, box):
     qr_path = ROOT / product['qr']
     if not qr_path.exists():
         return
-    qr = Image.open(qr_path).convert('RGBA').resize((box[2]-box[0], box[3]-box[1]), Image.Resampling.LANCZOS)
+    qr = Image.open(qr_path).convert('RGBA').resize((box[2] - box[0], box[3] - box[1]), Image.Resampling.LANCZOS)
     base.alpha_composite(qr, (box[0], box[1]))
 
 
-def vial_png(product, w=900, h=1100, transparent=True, large_label=False):
-    random.seed(product['id'])
-    img = Image.new('RGBA', (w, h), (0, 0, 0, 0) if transparent else rgba(OFF_WHITE, 255))
-    d = ImageDraw.Draw(img)
-    cx = w // 2
-    body_w = int(w * .27)
-    body_h = int(h * .66)
-    top = int(h * .19)
-    left = cx - body_w // 2
-    right = cx + body_w // 2
-    bottom = top + body_h
+# ---------------------------------------------------------------------------
+# PHOTO-REAL VIAL + CONTINUOUS LABEL COMPOSITING (v2: real base photography,
+# GrabCut-cut, single fused label panel — replaces the old PIL-drawn vial).
+# ---------------------------------------------------------------------------
 
-    # compact grounded contact shadow, not a floating ellipse
-    shadow = Image.new('RGBA', (w, h), (0,0,0,0))
+VIAL_MASTER = BASE / 'vial-master.png'
+BOX_MASTER = BASE / 'box-closed-cutout.png'
+STUDIO_BG = BASE / 'studio-bg-final-2.jpg'
+
+
+def build_continuous_label(product, w, h):
+    """One single continuous label panel (no split, no seam): EL monogram,
+    ELEMENTS LABS wordmark, product name, concentration, product code, batch,
+    QR/analysis corner, Research Use Only line."""
+    label = Image.new('RGBA', (w, h), rgba(OFF_WHITE, 250))
+    label = add_noise(label, amount=6, alpha=10)
+    d = ImageDraw.Draw(label)
+    d.rounded_rectangle([0, 0, w - 1, h - 1], radius=int(h * 0.05), outline=rgba(LINE, 255), width=2)
+    d.rectangle([0, 0, w, max(4, int(h * 0.035))], fill=rgba(PETROL, 255))
+
+    pad = int(w * 0.09)
+    mark_s = int(h * 0.15)
+    draw_el_mark(d, pad, int(h * 0.09), mark_s, dark=False)
+    d.text((pad + mark_s * 1.30, int(h * 0.095)), 'ELEMENTS LABS', font=font(int(h * 0.075), True), fill=rgba(GRAPHITE, 255))
+    d.text((pad + mark_s * 1.30, int(h * 0.095) + int(h * 0.082)), product['code'], font=font(int(h * 0.045), False, True), fill=rgba(MUTED, 255))
+
+    line_y = int(h * 0.34)
+    d.line([pad, line_y, w - pad, line_y], fill=rgba(LINE, 255), width=2)
+
+    name_size = int(h * 0.125) if len(product['name']) < 12 else int(h * 0.095)
+    d.text((w // 2, int(h * 0.46)), product['name'], font=font(name_size, True), fill=rgba(NEAR_BLACK, 255), anchor='mm')
+    d.text((w // 2, int(h * 0.58)), product['concentration'], font=font(int(h * 0.09), True), fill=rgba(PETROL, 255), anchor='mm')
+
+    line_y2 = int(h * 0.70)
+    d.line([pad, line_y2, w - pad, line_y2], fill=rgba(LINE, 255), width=1)
+
+    d.text((pad, int(h * 0.76)), 'Research Use Only', font=font(int(h * 0.05), True), fill=rgba(GRAPHITE, 255))
+    d.text((pad, int(h * 0.855)), product['batch'], font=font(int(h * 0.042), False, True), fill=rgba(MUTED, 255))
+
+    qr_size = int(h * 0.22)
+    qr_box = (w - pad - qr_size, int(h * 0.72), w - pad, int(h * 0.72) + qr_size)
+    paste_qr(label, product, qr_box)
+    d.text((w - pad - qr_size, qr_box[3] + int(h * 0.01)), 'Analysis', font=font(int(h * 0.035), False, True), fill=rgba(MUTED, 255))
+
+    return label
+
+
+def wrap_label_on_glass(label_img, target_w, target_h, curvature=0.16):
+    """Simulate the label wrapped on a cylindrical vial via edge shading
+    (cylindrical light falloff) while keeping the text sharp and legible —
+    real small-vial labels read almost flat at this scale."""
+    label_img = label_img.resize((target_w, target_h), Image.Resampling.LANCZOS)
+    w, h = label_img.size
+    shade = Image.new('L', (w, h), 255)
+    sd = ImageDraw.Draw(shade)
+    edge = max(1, int(w * curvature))
+    for x in range(edge):
+        k = x / edge
+        val = int(255 * (0.55 + 0.45 * k))
+        sd.line([(x, 0), (x, h)], fill=val)
+    for x in range(w - edge, w):
+        k = (w - x) / edge
+        val = int(255 * (0.55 + 0.45 * k))
+        sd.line([(x, 0), (x, h)], fill=val)
+    shaded = ImageChops.multiply(label_img.convert('RGB'), Image.merge('RGB', (shade, shade, shade)))
+    return Image.merge('RGBA', (*shaded.split(), label_img.split()[3]))
+
+
+def compose_vial(product, canvas_w=900, canvas_h=1300, label_scale=1.0):
+    """Compose one product vial photo: real base photograph (studio-shot glass
+    vial, GrabCut-cut) + continuous wrapped label with EL branding."""
+    vial = Image.open(VIAL_MASTER).convert('RGBA')
+    vw, vh = vial.size
+    scale = (canvas_h * 0.82) / vh
+    new_w, new_h = int(vw * scale), int(vh * scale)
+    vial_r = vial.resize((new_w, new_h), Image.Resampling.LANCZOS)
+
+    canvas = Image.new('RGBA', (canvas_w, canvas_h), (0, 0, 0, 0))
+    vx = (canvas_w - new_w) // 2
+    vy = canvas_h - new_h - int(canvas_h * 0.03)
+
+    shadow = Image.new('RGBA', (canvas_w, canvas_h), (0, 0, 0, 0))
     sd = ImageDraw.Draw(shadow)
-    sd.ellipse([left-58, bottom-18, right+58, bottom+28], fill=(13,17,21,44))
-    sd.ellipse([left+20, bottom-7, right-20, bottom+13], fill=(13,17,21,62))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(13))
-    img.alpha_composite(shadow)
+    sh_y = vy + new_h - int(new_h * 0.02)
+    sd.ellipse([vx - new_w * 0.22, sh_y - 14, vx + new_w * 1.22, sh_y + 30], fill=(13, 17, 21, 70))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(16))
+    canvas.alpha_composite(shadow)
 
-    # body silhouette with shoulders, thick edge, glass depth
-    glass = Image.new('RGBA', (w, h), (0,0,0,0))
-    gd = ImageDraw.Draw(glass)
-    body_points = [(left+22, top+52), (left+48, top+8), (right-48, top+8), (right-22, top+52), (right-8, bottom-70), (right-38, bottom-12), (left+38, bottom-12), (left+8, bottom-70)]
-    gd.polygon(body_points, fill=(246,251,252,42))
-    gd.line(body_points + [body_points[0]], fill=(139,158,168,82), width=3, joint='curve')
-    gd.rounded_rectangle([left+12, top+68, right-12, bottom-22], radius=body_w//2-18, outline=(255,255,255,116), width=3)
-    gd.rounded_rectangle([left+body_w*.12, top+42, left+body_w*.22, bottom-90], radius=30, fill=(255,255,255,78))
-    gd.rounded_rectangle([right-body_w*.20, top+86, right-body_w*.13, bottom-106], radius=22, fill=(13,91,107,34))
-    gd.line([left+34, top+110, left+30, bottom-110], fill=(51,68,79,34), width=2)
-    gd.line([right-34, top+108, right-30, bottom-112], fill=(51,68,79,38), width=2)
-    gd.ellipse([left+35, bottom-56, right-35, bottom-13], outline=(86,101,112,82), width=3)
-    gd.ellipse([left+52, bottom-42, right-52, bottom-22], fill=(226,235,238,34))
-    for _ in range(46):
-        x = random.randint(left+16, right-16); y = random.randint(top+42, bottom-92)
-        gd.line([x, y, x+random.randint(-5,5), y+random.randint(12,36)], fill=(255,255,255,random.randint(10,30)), width=1)
-    img.alpha_composite(glass)
+    canvas.alpha_composite(vial_r, (vx, vy))
 
-    # neck, rubber stopper and ribbed aluminium crimp cap
-    cap_w = int(body_w * .72)
-    cap_left = cx - cap_w//2
-    cap_right = cx + cap_w//2
-    neck_top = top - 48
-    d.rounded_rectangle([cap_left+18, neck_top+30, cap_right-18, top+42], radius=14, fill=(224,231,234,98), outline=(255,255,255,150), width=2)
-    d.ellipse([cap_left+18, top+27, cap_right-18, top+50], fill=(205,215,220,88), outline=(255,255,255,108), width=2)
-    cap_grad = Image.new('RGBA', (cap_w, 56), (0,0,0,0))
-    cd = ImageDraw.Draw(cap_grad)
-    for yy in range(56):
-        k = yy/55
-        base = int(62*(1-k)+29*k)
-        cd.line([(0,yy),(cap_w,yy)], fill=(base,base+5,base+9,255))
-    cd.rounded_rectangle([0,0,cap_w-1,55], radius=11, outline=(14,17,20,255), width=2)
-    for x in range(7, cap_w-6, 10):
-        cd.line([x,7,x-2,49], fill=(120,130,136,145), width=2)
-    cd.rounded_rectangle([cap_w*.23, 10, cap_w*.77, 27], radius=6, fill=(13,17,21,245))
-    img.alpha_composite(cap_grad, (cap_left, neck_top))
+    lab_w = int(new_w * 0.72 * label_scale)
+    lab_h = int(new_h * 0.30 * label_scale)
+    lab_x = vx + (new_w - lab_w) // 2
+    lab_y = vy + int(new_h * 0.395)
 
-    # label texture and exact label system, intentionally generated by text layer
-    lab_w = int(body_w * .88)
-    lab_h = int(body_h * (.44 if large_label else .38))
-    lab_left = cx - lab_w//2
-    lab_top = top + int(body_h * .265)
-    label = Image.new('RGBA', (lab_w, lab_h), rgba(OFF_WHITE, 252))
-    label = add_noise(label, amount=7, alpha=13)
-    ld = ImageDraw.Draw(label)
-    ld.rounded_rectangle([0,0,lab_w-1,lab_h-1], radius=7, outline=(204,211,215,255), width=2)
-    ld.rectangle([0,0,lab_w,8], fill=rgba(PETROL, 255))
-    draw_el_mark(ld, 18, 21, 39, dark=True)
-    ld.text((76, 22), 'ELEMENTS LABS', font=font(16, True), fill=rgba(GRAPHITE,255))
-    ld.text((76, 45), product['code'], font=font(11, False, True), fill=rgba(MUTED,255))
-    ld.line([16, 78, lab_w-16, 78], fill=rgba(LINE,255), width=2)
-    name_f = font(31 if len(product['name']) < 12 else 23, True)
-    ld.text((lab_w//2, 112), product['name'], font=name_f, fill=rgba(NEAR_BLACK,255), anchor='mm')
-    ld.text((lab_w//2, 149), product['concentration'], font=font(22, True), fill=rgba(PETROL,255), anchor='mm')
-    ld.line([16, lab_h-78, lab_w-16, lab_h-78], fill=rgba(LINE,255), width=1)
-    ld.text((16, lab_h-64), 'Research Use Only', font=font(12, True), fill=rgba(GRAPHITE,255))
-    ld.text((16, lab_h-42), product['batch'], font=font(11, False, True), fill=rgba(MUTED,255))
-    paste_qr(label, product, (lab_w-66, lab_h-68, lab_w-17, lab_h-19))
-    ld.text((lab_w-67, lab_h-17), 'Analysis', font=font(9, False, True), fill=rgba(MUTED,255))
-    # Subtle cylindrical light falloff over label edges
-    mask = Image.new('L', (lab_w, lab_h), 0)
-    md = ImageDraw.Draw(mask)
-    md.rounded_rectangle([0,0,lab_w-1,lab_h-1], radius=7, fill=255)
-    edge = Image.new('RGBA', (lab_w, lab_h), (0,0,0,0))
-    ed = ImageDraw.Draw(edge)
-    ed.rectangle([0,0,10,lab_h], fill=(0,0,0,18))
-    ed.rectangle([lab_w-10,0,lab_w,lab_h], fill=(0,0,0,14))
-    label = Image.alpha_composite(label, edge)
-    img.alpha_composite(label, (lab_left, lab_top))
-    d.rounded_rectangle([lab_left, lab_top, lab_left+lab_w, lab_top+lab_h], radius=7, outline=(255,255,255,88), width=1)
-    # Foreground glass reflection across label/body
-    d.rounded_rectangle([left+body_w*.18, top+30, left+body_w*.25, bottom-70], radius=26, fill=(255,255,255,32))
-    return img
+    label = build_continuous_label(product, 640, int(640 * lab_h / lab_w))
+    label = wrap_label_on_glass(label, lab_w, lab_h)
+    canvas.alpha_composite(label, (lab_x, lab_y))
 
-def draw_box(img, xy, product=None, scale=1.0):
-    d = ImageDraw.Draw(img)
-    x,y,w,h = xy
-    side = [(x+w*.76,y+20),(x+w,y+40),(x+w,y+h-18),(x+w*.76,y+h)]
-    front = [x,y,x+w*.78,y+h]
-    d.polygon(side, fill=(225,229,230,255), outline=(186,194,198,255))
-    d.rounded_rectangle(front, radius=16, fill=rgba(OFF_WHITE,255), outline=(192,199,203,255), width=2)
-    d.rectangle([x, y, x+w*.78, y+8], fill=rgba(PETROL,255))
-    draw_el_mark(d, x+30, y+34, 50*scale, dark=True)
-    d.text((x+96*scale,y+36), 'ELEMENTS LABS', font=font(18 if scale<=1 else 24, True), fill=rgba(GRAPHITE,255))
-    if product:
-        d.text((x+34,y+h*.47), product['name'], font=font(30 if scale<=1 else 38, True), fill=rgba(NEAR_BLACK,255))
-        d.text((x+34,y+h*.58), product['concentration'], font=font(21 if scale<=1 else 28, True), fill=rgba(PETROL,255))
-        d.text((x+34,y+h-54), product['batch'], font=font(13 if scale<=1 else 18, False, True), fill=rgba(MUTED,255))
-    d.line([x+28,y+h-75,x+w*.72,y+h-75], fill=rgba(LINE,255), width=2)
+    return canvas
+
+
+def studio_bg_crop(size):
+    """Crop a clean region of the real studio photo background (no synthetic gradient)."""
+    photo = Image.open(STUDIO_BG).convert('RGBA')
+    pw, ph = photo.size
+    target_w, target_h = size
+    scale = max(target_w / pw, target_h / ph) * 1.08
+    photo_r = photo.resize((int(pw * scale), int(ph * scale)), Image.Resampling.LANCZOS)
+    rw, rh = photo_r.size
+    ox = (rw - target_w) // 2
+    oy = int((rh - target_h) * 0.35)
+    return photo_r.crop((ox, oy, ox + target_w, oy + target_h))
 
 
 def product_assets():
     for p in PRODUCTS:
-        vial = vial_png(p, 900, 1100, True)
+        vial = compose_vial(p, 900, 1300)
         vial.save(PRODUCTS_DIR / f'{p["id"]}-vial.png')
-        bg = linear_gradient((1280, 980), '#FBFCFC', '#E8EEF0')
-        bg = add_noise(bg, amount=5, alpha=10)
-        d = ImageDraw.Draw(bg)
-        # matte tabletop plane and contact shadows placed before products
-        d.rounded_rectangle([120, 740, 1160, 865], radius=44, fill=(232,237,239,255), outline=(212,219,222,255), width=2)
-        shadow = Image.new('RGBA', bg.size, (0,0,0,0))
+
+        bg = studio_bg_crop((1280, 980)).convert('RGBA')
+        bg = add_noise(bg, amount=3, alpha=6)
+
+        shadow = Image.new('RGBA', bg.size, (0, 0, 0, 0))
         sd = ImageDraw.Draw(shadow)
-        sd.ellipse([255, 720, 630, 785], fill=(13,17,21,36))
-        sd.ellipse([655, 710, 1030, 800], fill=(13,17,21,28))
+        sd.ellipse([255, 745, 630, 810], fill=(13, 17, 21, 36))
+        sd.ellipse([655, 735, 1030, 820], fill=(13, 17, 21, 28))
         shadow = shadow.filter(ImageFilter.GaussianBlur(18))
         bg.alpha_composite(shadow)
-        box_layer = Image.new('RGBA', bg.size, (0,0,0,0))
-        draw_box(box_layer, (672, 190, 330, 520), p, .92)
-        bg.alpha_composite(box_layer)
-        vial_small = vial.resize((540, 660), Image.Resampling.LANCZOS)
-        bg.alpha_composite(vial_small, (184, 122))
-        # foreground lens/softbox reflections
-        gloss = Image.new('RGBA', bg.size, (0,0,0,0))
+
+        box = Image.open(BOX_MASTER).convert('RGBA')
+        bw, bh = box.size
+        bscale = 340 / bw
+        box_r = box.resize((int(bw * bscale), int(bh * bscale)), Image.Resampling.LANCZOS)
+        box_h = box_r.size[1]
+        bg.alpha_composite(box_r, (700, 780 - box_h))
+
+        vial_detail = compose_vial(p, 560, 820, label_scale=1.05)
+        bg.alpha_composite(vial_detail, (140, 60))
+
+        gloss = Image.new('RGBA', bg.size, (0, 0, 0, 0))
         gd = ImageDraw.Draw(gloss)
-        gd.rounded_rectangle([64, 68, 172, 850], radius=50, fill=(255,255,255,42))
-        gd.rounded_rectangle([1088, 80, 1172, 820], radius=42, fill=(255,255,255,30))
+        gd.rounded_rectangle([64, 68, 172, 850], radius=50, fill=(255, 255, 255, 30))
         bg = Image.alpha_composite(bg, gloss)
         bg.save(PRODUCTS_DIR / f'{p["id"]}-detail.png')
 
+
 def scene_assets():
-    # Hero scene
-    bg = linear_gradient((1800, 1280), '#FCFCFD', '#E9EEF0')
-    bg = add_noise(bg, amount=6, alpha=10)
+    # Hero scene: real studio backdrop + 3 vials + 1 packaging box, all grounded
+    # on one shared contact-shadow line so nothing floats.
+    bg = studio_bg_crop((1800, 1280)).convert('RGBA')
+    bg = add_noise(bg, amount=3, alpha=6)
     d = ImageDraw.Draw(bg)
-    d.rounded_rectangle([90, 935, 1710, 1135], radius=70, fill=(214,220,223,112))
-    d.rounded_rectangle([120, 900, 1680, 1065], radius=42, fill=(239,242,243,255), outline=(210,216,219,255), width=2)
-    for x in [138, 1630]:
-        d.rounded_rectangle([x, 220, x+36, 900], radius=20, fill=(255,255,255,70))
-    for p, pos, size in [(PRODUCTS[10], (625,260), (530,648)), (PRODUCTS[9], (335,370), (430,526)), (PRODUCTS[12], (1010,345), (450,550))]:
-        vial = Image.open(PRODUCTS_DIR / f'{p["id"]}-vial.png').convert('RGBA').resize(size, Image.Resampling.LANCZOS)
-        bg.alpha_composite(vial, pos)
-    draw_box(bg, (980, 615, 430, 350), PRODUCTS[10], 1.0)
-    d.text((135, 118), 'ELEMENTS LABS', font=font(36, True), fill=rgba(GRAPHITE,255))
-    d.text((135, 166), 'controlled product photography direction', font=font(21), fill=rgba(MUTED,255))
+
+    shadow = Image.new('RGBA', bg.size, (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shadow)
+    sd.ellipse([260, 990, 950, 1060], fill=(13, 17, 21, 55))
+    sd.ellipse([980, 995, 1550, 1065], fill=(13, 17, 21, 45))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(22))
+    bg.alpha_composite(shadow)
+
+    box = Image.open(BOX_MASTER).convert('RGBA')
+    bw, bh = box.size
+    bscale = 400 / bw
+    box_r = box.resize((int(bw * bscale), int(bh * bscale)), Image.Resampling.LANCZOS)
+    box_h = box_r.size[1]
+    bg.alpha_composite(box_r, (1180, 1030 - box_h))
+
+    positions = [(PRODUCTS[10], 660), (PRODUCTS[9], 500), (PRODUCTS[12], 520)]
+    xs = [700, 410, 990]
+    ground_y = 1015
+    for (p, target_h_v), x in zip(positions, xs):
+        vial = compose_vial(p, int(target_h_v * 0.62), target_h_v)
+        bg.alpha_composite(vial, (x, ground_y - target_h_v))
+
+    d.text((135, 118), 'ELEMENTS LABS', font=font(34, True), fill=rgba(GRAPHITE, 255))
+    d.text((135, 164), 'Premium research product photography', font=font(20), fill=rgba(MUTED, 255))
     bg.save(SCENES / 'hero-studio-scene.png')
 
-    # Group shot with all 13 vials
-    group = linear_gradient((2200, 1220), '#FBFBFC', '#E8ECEE')
-    group = add_noise(group, amount=6, alpha=11)
+    # Group shot — all 13 vials, identical geometry/label grid, real backdrop
+    group = studio_bg_crop((2200, 1220)).convert('RGBA')
+    group = add_noise(group, amount=3, alpha=7)
     d = ImageDraw.Draw(group)
-    d.rounded_rectangle([110, 980, 2090, 1125], radius=70, fill=(12,18,22,28))
-    x0 = 115
-    for i,p in enumerate(PRODUCTS):
+    x0 = 110
+    for i, p in enumerate(PRODUCTS):
         col = i % 7; row = i // 7
-        size = (255, 312) if row == 0 else (238, 291)
+        target_h_v = 300 if row == 0 else 268
         x = x0 + col * 285 + (70 if row else 0)
-        y = 230 + row * 350
-        vial = Image.open(PRODUCTS_DIR / f'{p["id"]}-vial.png').convert('RGBA').resize(size, Image.Resampling.LANCZOS)
-        group.alpha_composite(vial, (x,y))
-    d.text((120, 88), '13/13 Research Product Family', font=font(44, True), fill=rgba(GRAPHITE,255))
-    d.text((120, 145), 'Same bottle geometry, same label grid, same packaging rule.', font=font(24), fill=rgba(MUTED,255))
+        y = 240 + row * 330
+        vial = compose_vial(p, int(target_h_v * 0.62), target_h_v)
+        group.alpha_composite(vial, (x, y))
+    d.text((120, 88), '13/13 Research Product Family', font=font(42, True), fill=rgba(GRAPHITE, 255))
+    d.text((120, 144), 'Identical bottle geometry, identical label grid, identical packaging rule.', font=font(23), fill=rgba(MUTED, 255))
     group.save(SCENES / 'group-product-shot.png')
 
-    # Packaging shot
-    pack = linear_gradient((1600, 1120), '#FCFCFD', '#ECEFF1')
-    pack = add_noise(pack, amount=6, alpha=10)
-    d = ImageDraw.Draw(pack)
-    d.rounded_rectangle([80, 870, 1520, 1010], radius=60, fill=(13,17,21,28))
-    draw_box(pack, (260, 220, 430, 610), PRODUCTS[0], 1.0)
-    draw_box(pack, (605, 280, 440, 600), PRODUCTS[10], 1.0)
-    draw_box(pack, (940, 240, 390, 560), PRODUCTS[12], 1.0)
-    vial = Image.open(PRODUCTS_DIR / '5-amino-1mq-vial.png').convert('RGBA').resize((405,495), Image.Resampling.LANCZOS)
-    pack.alpha_composite(vial, (1065, 505))
+    # Packaging shot: box + vials, real backdrop, shared ground line
+    pack = studio_bg_crop((1600, 1120)).convert('RGBA')
+    pack = add_noise(pack, amount=3, alpha=6)
+    box = Image.open(BOX_MASTER).convert('RGBA')
+    bw, bh = box.size
+    bscale = 560 / bw
+    box_r = box.resize((int(bw * bscale), int(bh * bscale)), Image.Resampling.LANCZOS)
+    box_h = box_r.size[1]
+    ground_y = 920
+    pack.alpha_composite(box_r, (200, ground_y - box_h))
+    vial = compose_vial(PRODUCTS[0], 460, 760)
+    pack.alpha_composite(vial, (920, ground_y - 760))
+    vial2 = compose_vial(PRODUCTS[10], 400, 660)
+    pack.alpha_composite(vial2, (1220, ground_y - 660))
     pack.save(SCENES / 'packaging-shot.png')
 
-    # Macro detail
-    macro = linear_gradient((1500, 980), '#F8F9FA', '#EAEEF0')
-    macro = add_noise(macro, amount=8, alpha=12)
-    vial = Image.open(PRODUCTS_DIR / '5-amino-1mq-vial.png').convert('RGBA').resize((1060, 1295), Image.Resampling.LANCZOS)
-    macro.alpha_composite(vial, (170, -150))
+    # Macro detail — close crop on glass/label edge/cap, real backdrop
+    macro = studio_bg_crop((1500, 980)).convert('RGBA')
+    macro = add_noise(macro, amount=4, alpha=8)
+    vial = compose_vial(PRODUCTS[10], 900, 1500, label_scale=1.15)
+    macro.alpha_composite(vial, (60, -280))
     md = ImageDraw.Draw(macro)
-    md.rounded_rectangle([950, 150, 1345, 360], radius=28, fill=(255,255,255,198), outline=(207,214,218,255), width=2)
-    md.text((990,190), 'Macro detail', font=font(31, True), fill=rgba(GRAPHITE,255))
-    md.text((990,245), 'paper label · glass edge · graphite cap', font=font(21), fill=rgba(MUTED,255))
+    md.rounded_rectangle([950, 150, 1400, 370], radius=28, fill=(255, 255, 255, 205), outline=(207, 214, 218, 255), width=2)
+    md.text((990, 190), 'Macro detail', font=font(30, True), fill=rgba(GRAPHITE, 255))
+    md.text((990, 244), 'Real glass edge · label wrap · graphite crimp cap', font=font(19), fill=rgba(MUTED, 255))
     macro.save(SCENES / 'macro-detail.png')
 
 
 def data_url(path: Path) -> str:
     ext = path.suffix.lower().lstrip('.')
-    mime = 'image/svg+xml' if ext == 'svg' else f'image/{"jpeg" if ext in ["jpg","jpeg"] else ext}'
+    mime = {'svg': 'image/svg+xml', 'woff2': 'font/woff2', 'woff': 'font/woff'}.get(ext, f'image/{"jpeg" if ext in ["jpg","jpeg"] else ext}')
     return f'data:{mime};base64,' + base64.b64encode(path.read_bytes()).decode('ascii')
+
+
+FONTS_DIR = ASSETS / 'fonts'
+FONT_WEIGHTS = [
+    ('space-grotesk-0.woff2', 400, 'normal'),
+    ('space-grotesk-1.woff2', 500, 'normal'),
+    ('space-grotesk-2.woff2', 600, 'normal'),
+    ('space-grotesk-3.woff2', 700, 'normal'),
+]
+
+
+def font_face_css(inline: bool) -> str:
+    faces = []
+    for fname, weight, style in FONT_WEIGHTS:
+        fpath = FONTS_DIR / fname
+        if not fpath.exists():
+            continue
+        src = data_url(fpath) if inline else f'assets/fonts/{fname}'
+        faces.append(
+            f"@font-face{{font-family:'Space Grotesk';font-style:{style};font-weight:{weight};"
+            f"font-display:swap;src:url('{src}') format('woff2')}}"
+        )
+    return ''.join(faces)
 
 
 CSS = r'''
 :root{
-  --graphite:#2A2F36;--near-black:#0D1115;--off-white:#F7F7F8;--petrol:#0D5B6B;--ink:#172027;--muted:#66717B;--line:#D9DEE1;--panel:#FFFFFF;--soft:#EEF2F3;--radius:26px;--max:1220px;--shadow:0 28px 70px rgba(13,17,21,.13);--sans:"Segoe UI",Roboto,Arial,sans-serif;--mono:"Cascadia Mono","SFMono-Regular","Segoe UI Mono",monospace}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--off-white);color:var(--ink);font-family:var(--sans);line-height:1.5;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select{font:inherit}.site-header{position:sticky;top:0;z-index:40;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:var(--max);margin:0 auto;padding:18px 22px;background:rgba(247,247,248,.91);backdrop-filter:blur(18px);border-bottom:1px solid rgba(42,47,54,.12)}.brand{display:flex;align-items:center;gap:13px;font-weight:850;letter-spacing:.13em}.brand img{width:148px;height:auto;display:block}.main-nav{display:flex;gap:24px;justify-content:center;color:#55606A;font-size:14px}.main-nav a{padding:8px 0;border-bottom:1px solid transparent}.main-nav a:hover,.main-nav a.active{color:var(--near-black);border-color:var(--petrol)}.header-actions{display:flex;gap:10px;align-items:center}.menu-toggle{display:none}.secondary-btn,.ghost-btn,.menu-toggle,.search-open{border:1px solid var(--line);background:rgba(255,255,255,.62);color:var(--graphite);border-radius:999px;padding:11px 16px;cursor:pointer;transition:.2s ease}.primary-btn,.cart-link{border:1px solid var(--petrol);background:var(--near-black);color:white;border-radius:999px;padding:11px 17px;cursor:pointer;box-shadow:0 12px 24px rgba(13,17,21,.12);transition:.2s ease}.primary-btn:hover,.secondary-btn:hover,.cart-link:hover,.ghost-btn:hover{transform:translateY(-1px)}.cart-link span{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:6px;background:var(--petrol);color:white;border-radius:50%;font:800 12px var(--mono)}.section{max-width:var(--max);margin:0 auto;padding:84px 22px}.hero{min-height:calc(100vh - 82px);display:grid;grid-template-columns:.92fr 1.08fr;gap:58px;align-items:center}.eyebrow{font:800 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--petrol);margin-bottom:16px}.hero h1,.page-title{font-size:clamp(45px,5.4vw,84px);line-height:1.02;letter-spacing:-.045em;margin:0 0 24px;color:var(--near-black)}.hero h1 span,.page-title span{color:var(--petrol)}.lead{font-size:clamp(17px,1.5vw,21px);color:var(--muted);max-width:600px;margin:0 0 30px}.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.trust-matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}.trust-matrix div,.metric-card{padding:17px;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:18px}.trust-matrix strong,.metric-card strong{display:block;font-size:14px;color:var(--near-black);margin-bottom:5px}.trust-matrix span,.metric-card span{font-size:12px;color:var(--muted)}.hero-photo,.wide-photo{position:relative;background:linear-gradient(145deg,#fff,#EEF2F3);border:1px solid var(--line);border-radius:34px;box-shadow:var(--shadow);overflow:hidden}.hero-photo img,.wide-photo img{display:block;width:100%;height:auto}.photo-caption{position:absolute;left:22px;bottom:22px;padding:12px 15px;border-radius:14px;background:rgba(255,255,255,.82);border:1px solid rgba(217,222,225,.9);backdrop-filter:blur(14px);font:800 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}.section-head{margin-bottom:34px;display:flex;align-items:end;justify-content:space-between;gap:24px}.section-head h2{font-size:clamp(32px,3.5vw,52px);line-height:1.05;letter-spacing:-.032em;margin:0;color:var(--near-black)}.section-head p{max-width:560px;color:var(--muted);margin:0}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:24px}.product-card{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:18px;display:flex;flex-direction:column;position:relative;overflow:hidden;min-height:510px;box-shadow:0 18px 44px rgba(13,17,21,.08)}.product-card:before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,var(--graphite),var(--petrol));opacity:.95}.card-top{display:flex;justify-content:space-between;font:800 10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:8px 0 8px}.product-img-wrap{display:grid;place-items:center;background:linear-gradient(180deg,#F8FAFA,#ECEFF1);border:1px solid #E1E6E8;border-radius:23px;min-height:250px;margin-bottom:18px;overflow:hidden}.product-img-wrap img{width:82%;height:auto;filter:drop-shadow(0 18px 24px rgba(13,17,21,.14))}.product-card h3{margin:0 0 7px;font-size:22px;letter-spacing:-.018em;color:var(--near-black)}.compound-meta{font-size:13px;color:var(--muted);line-height:1.58}.price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:17px}.price{font:850 24px/1 var(--sans);letter-spacing:-.02em}.status{font:800 11px var(--mono);color:var(--petrol);text-transform:uppercase;letter-spacing:.07em}.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.card-actions .secondary-btn,.card-actions .primary-btn{text-align:center;padding:12px 10px;font-size:13px}.quality-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:28px;align-items:start}.process{counter-reset:step;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}.process li{counter-increment:step;position:relative;padding:18px 18px 18px 58px;background:#fff;border:1px solid var(--line);border-radius:18px}.process li:before{content:counter(step,decimal-leading-zero);position:absolute;left:17px;top:20px;font:850 14px var(--mono);color:var(--petrol)}.process strong{display:block;margin-bottom:4px}.coa-preview,.batch-panel,.cart-panel,.partner-panel{background:#fff;border:1px solid var(--line);border-radius:28px;padding:28px;box-shadow:0 15px 42px rgba(13,17,21,.07)}.report{position:relative;background:#FCFCFD;color:var(--near-black);border:1px solid #DDE2E5;border-radius:18px;padding:24px}.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}.report-grid div{padding:12px;border:1px solid #E1E5E8;border-radius:12px;background:white}.report-grid span{display:block;font:800 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.report-grid strong{font-size:14px}.detail-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:start}.gallery{display:grid;gap:16px}.gallery-main{background:linear-gradient(180deg,#fff,#EEF2F3);border:1px solid var(--line);border-radius:32px;overflow:hidden;box-shadow:var(--shadow)}.gallery-main img{display:block;width:100%;height:auto}.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.thumbs img{width:100%;border:1px solid var(--line);border-radius:18px;background:#fff}.purchase{position:sticky;top:100px;background:#fff;border:1px solid var(--line);border-radius:32px;padding:30px;box-shadow:0 20px 46px rgba(13,17,21,.09)}.purchase h1{font-size:clamp(38px,4vw,58px);line-height:1.02;letter-spacing:-.04em;margin:0 0 15px;color:var(--near-black)}.spec-list{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:24px 0}.spec-list div{padding:14px;background:#F6F8F8;border:1px solid var(--line);border-radius:14px}.spec-list span{display:block;font:800 10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.spec-list strong{font-size:16px}.filters{display:grid;grid-template-columns:1.5fr .8fr .8fr;gap:12px;margin-bottom:24px}.filters input,.filters select,.batch-panel input{padding:13px 15px;background:#fff;border:1px solid var(--line);border-radius:14px;color:var(--ink)}.batch-panel input{width:100%;margin-bottom:16px}.qr{width:128px;height:128px;border-radius:12px;background:#fff;padding:7px;display:block;margin-top:18px;border:1px solid var(--line)}.cart-line{display:grid;grid-template-columns:1.2fr .7fr .7fr auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}.qty{display:flex;gap:7px;align-items:center}.qty button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:#fff}.total{font:850 30px/1 var(--sans);text-align:right;margin:22px 0}.hidden{display:none}.footer{max-width:var(--max);margin:0 auto;padding:62px 22px 44px;display:grid;grid-template-columns:2fr 1.3fr 1.2fr;gap:28px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}.footer strong{color:var(--near-black)}.footer a{display:block;color:var(--muted);margin-bottom:8px}.research-only{grid-column:1/-1;text-align:center;font:800 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:18px;border-top:1px solid var(--line)}.faq-list{display:flex;flex-direction:column;gap:14px}.faq-list details{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px}.faq-list summary{font-weight:750;cursor:pointer}.legal{max-width:820px}.family-section .wide-photo{margin-top:10px}.brand-story{display:grid;grid-template-columns:.9fr 1.1fr;gap:32px;align-items:center}.brand-story img{width:100%;border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow)}.internal-badge{display:inline-block;background:#F2C94C;color:#101418;font:850 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:8px}.partner-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}.kpi{padding:20px;background:#F6F8F8;border:1px solid var(--line);border-radius:16px}.kpi span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.kpi strong{display:block;font-size:26px;margin:8px 0 4px}.partner-table{width:100%;border-collapse:collapse;font-size:14px}.partner-table th,.partner-table td{padding:12px 10px;text-align:left;border-bottom:1px solid var(--line)}.partner-table th{font:800 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}#toast{position:fixed;bottom:22px;right:22px;z-index:60;background:var(--near-black);color:white;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:12px 18px;font-size:13px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s;pointer-events:none}#toast.show-toast{opacity:1;transform:translateY(0)}
+  --graphite:#2A2F36;--near-black:#0D1115;--off-white:#F7F7F8;--petrol:#0D5B6B;--ink:#172027;--muted:#66717B;--line:#D9DEE1;--panel:#FFFFFF;--soft:#EEF2F3;--radius:26px;--max:1220px;--shadow:0 28px 70px rgba(13,17,21,.13);--sans:"Space Grotesk","Segoe UI",Roboto,Arial,sans-serif;--mono:"Cascadia Mono","SFMono-Regular","Segoe UI Mono",monospace}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--off-white);color:var(--ink);font-family:var(--sans);line-height:1.5;overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select{font:inherit}.site-header{position:sticky;top:0;z-index:40;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;max-width:var(--max);margin:0 auto;padding:18px 22px;background:rgba(247,247,248,.91);backdrop-filter:blur(18px);border-bottom:1px solid rgba(42,47,54,.12)}.brand{display:flex;align-items:center;gap:13px;font-weight:850;letter-spacing:.13em}.brand img{width:220px;height:auto;display:block}.brand .brand-mobile{display:none}.main-nav{display:flex;gap:24px;justify-content:center;color:#55606A;font-size:14px}.main-nav a{padding:8px 0;border-bottom:1px solid transparent}.main-nav a:hover,.main-nav a.active{color:var(--near-black);border-color:var(--petrol)}.header-actions{display:flex;gap:10px;align-items:center}.menu-toggle{display:none}.secondary-btn,.ghost-btn,.menu-toggle,.search-open{border:1px solid var(--line);background:rgba(255,255,255,.62);color:var(--graphite);border-radius:999px;padding:11px 16px;cursor:pointer;transition:.2s ease}.primary-btn,.cart-link{border:1px solid var(--petrol);background:var(--near-black);color:white;border-radius:999px;padding:11px 17px;cursor:pointer;box-shadow:0 12px 24px rgba(13,17,21,.12);transition:.2s ease}.primary-btn:hover,.secondary-btn:hover,.cart-link:hover,.ghost-btn:hover{transform:translateY(-1px)}.cart-link span{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:6px;background:var(--petrol);color:white;border-radius:50%;font:800 12px var(--mono)}.section{max-width:var(--max);margin:0 auto;padding:84px 22px}.hero{min-height:calc(100vh - 82px);display:grid;grid-template-columns:.92fr 1.08fr;gap:58px;align-items:center}.eyebrow{font:800 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--petrol);margin-bottom:16px}.hero h1,.page-title{font-size:clamp(45px,5.4vw,84px);line-height:1.02;letter-spacing:-.045em;margin:0 0 24px;color:var(--near-black)}.hero h1 span,.page-title span{color:var(--petrol)}.lead{font-size:clamp(17px,1.5vw,21px);color:var(--muted);max-width:600px;margin:0 0 30px}.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.trust-matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}.trust-matrix div,.metric-card{padding:17px;background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:18px}.trust-matrix strong,.metric-card strong{display:block;font-size:14px;color:var(--near-black);margin-bottom:5px}.trust-matrix span,.metric-card span{font-size:12px;color:var(--muted)}.hero-photo,.wide-photo{position:relative;background:linear-gradient(145deg,#fff,#EEF2F3);border:1px solid var(--line);border-radius:34px;box-shadow:var(--shadow);overflow:hidden}.hero-photo img,.wide-photo img{display:block;width:100%;height:auto}.photo-caption{position:absolute;left:22px;bottom:22px;padding:12px 15px;border-radius:14px;background:rgba(255,255,255,.82);border:1px solid rgba(217,222,225,.9);backdrop-filter:blur(14px);font:800 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--graphite)}.section-head{margin-bottom:34px;display:flex;align-items:end;justify-content:space-between;gap:24px}.section-head h2{font-size:clamp(32px,3.5vw,52px);line-height:1.05;letter-spacing:-.032em;margin:0;color:var(--near-black)}.section-head p{max-width:560px;color:var(--muted);margin:0}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:24px}.product-card{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:18px;display:flex;flex-direction:column;position:relative;overflow:hidden;min-height:510px;box-shadow:0 18px 44px rgba(13,17,21,.08)}.product-card:before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,var(--graphite),var(--petrol));opacity:.95}.card-top{display:flex;justify-content:space-between;font:800 10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:8px 0 8px}.product-img-wrap{display:grid;place-items:center;background:linear-gradient(180deg,#F8FAFA,#ECEFF1);border:1px solid #E1E6E8;border-radius:23px;min-height:250px;margin-bottom:18px;overflow:hidden}.product-img-wrap img{width:82%;height:auto;filter:drop-shadow(0 18px 24px rgba(13,17,21,.14))}.product-card h3{margin:0 0 7px;font-size:22px;letter-spacing:-.018em;color:var(--near-black)}.compound-meta{font-size:13px;color:var(--muted);line-height:1.58}.price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:17px}.price{font:850 24px/1 var(--sans);letter-spacing:-.02em}.status{font:800 11px var(--mono);color:var(--petrol);text-transform:uppercase;letter-spacing:.07em}.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.card-actions .secondary-btn,.card-actions .primary-btn{text-align:center;padding:12px 10px;font-size:13px}.quality-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:28px;align-items:start}.process{counter-reset:step;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}.process li{counter-increment:step;position:relative;padding:18px 18px 18px 58px;background:#fff;border:1px solid var(--line);border-radius:18px}.process li:before{content:counter(step,decimal-leading-zero);position:absolute;left:17px;top:20px;font:850 14px var(--mono);color:var(--petrol)}.process strong{display:block;margin-bottom:4px}.coa-preview,.batch-panel,.cart-panel,.partner-panel{background:#fff;border:1px solid var(--line);border-radius:28px;padding:28px;box-shadow:0 15px 42px rgba(13,17,21,.07)}.report{position:relative;background:#FCFCFD;color:var(--near-black);border:1px solid #DDE2E5;border-radius:18px;padding:24px}.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}.report-grid div{padding:12px;border:1px solid #E1E5E8;border-radius:12px;background:white}.report-grid span{display:block;font:800 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}.report-grid strong{font-size:14px}.detail-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:start}.gallery{display:grid;gap:16px}.gallery-main{background:linear-gradient(180deg,#fff,#EEF2F3);border:1px solid var(--line);border-radius:32px;overflow:hidden;box-shadow:var(--shadow)}.gallery-main img{display:block;width:100%;height:auto}.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.thumbs img{width:100%;border:1px solid var(--line);border-radius:18px;background:#fff}.purchase{position:sticky;top:100px;background:#fff;border:1px solid var(--line);border-radius:32px;padding:30px;box-shadow:0 20px 46px rgba(13,17,21,.09)}.purchase h1{font-size:clamp(38px,4vw,58px);line-height:1.02;letter-spacing:-.04em;margin:0 0 15px;color:var(--near-black)}.spec-list{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin:24px 0}.spec-list div{padding:14px;background:#F6F8F8;border:1px solid var(--line);border-radius:14px}.spec-list span{display:block;font:800 10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}.spec-list strong{font-size:16px}.filters{display:grid;grid-template-columns:1.5fr .8fr .8fr;gap:12px;margin-bottom:24px}.filters input,.filters select,.batch-panel input{padding:13px 15px;background:#fff;border:1px solid var(--line);border-radius:14px;color:var(--ink)}.batch-panel input{width:100%;margin-bottom:16px}.qr{width:128px;height:128px;border-radius:12px;background:#fff;padding:7px;display:block;margin-top:18px;border:1px solid var(--line)}.cart-line{display:grid;grid-template-columns:1.2fr .7fr .7fr auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}.qty{display:flex;gap:7px;align-items:center}.qty button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff}.total{font:850 30px/1 var(--sans);text-align:right;margin:22px 0}.hidden{display:none}.footer{max-width:var(--max);margin:0 auto;padding:62px 22px 44px;display:grid;grid-template-columns:2fr 1.3fr 1.2fr;gap:28px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}.footer strong{color:var(--near-black)}.footer a{display:block;color:var(--muted);margin-bottom:8px}.research-only{grid-column:1/-1;text-align:center;font:800 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:18px;border-top:1px solid var(--line)}.faq-list{display:flex;flex-direction:column;gap:14px}.faq-list details{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px}.faq-list summary{font-weight:750;cursor:pointer}.legal{max-width:820px}.family-section .wide-photo{margin-top:10px}.brand-story{display:grid;grid-template-columns:.9fr 1.1fr;gap:32px;align-items:center}.brand-story img{width:100%;border-radius:30px;border:1px solid var(--line);box-shadow:var(--shadow)}.internal-badge{display:inline-block;background:#F2C94C;color:#101418;font:850 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:8px}.skip-link{position:absolute;left:12px;top:-60px;background:var(--near-black);color:#fff;padding:12px 18px;border-radius:0 0 10px 10px;z-index:100;transition:top .2s}.skip-link:focus{top:0}.partner-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}.kpi{padding:20px;background:#F6F8F8;border:1px solid var(--line);border-radius:16px}.kpi span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.kpi strong{display:block;font-size:26px;margin:8px 0 4px}.partner-table{width:100%;border-collapse:collapse;font-size:14px}.partner-table th,.partner-table td{padding:12px 10px;text-align:left;border-bottom:1px solid var(--line)}.partner-table th{font:800 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}#toast{position:fixed;bottom:22px;right:22px;z-index:60;background:var(--near-black);color:white;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:12px 18px;font-size:13px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s;pointer-events:none}#toast.show-toast{opacity:1;transform:translateY(0)}
 @media(min-width:1000px){#productGrid{grid-template-columns:repeat(3,1fr)}#productGrid .product-card:last-child:nth-child(3n+1){grid-column:2}}
-@media(max-width:960px){.site-header{grid-template-columns:auto auto auto;gap:10px}.menu-toggle{display:block;margin-left:auto}.main-nav{position:absolute;left:14px;right:14px;top:74px;display:none;flex-direction:column;justify-content:flex-start;background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.main-nav.open{display:flex}.search-open{display:none}.hero,.quality-grid,.detail-layout,.brand-story{grid-template-columns:1fr}.hero{min-height:auto;padding-top:48px}.cards{grid-template-columns:1fr 1fr}.trust-matrix,.partner-kpis{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.footer{grid-template-columns:1fr}.cart-line{grid-template-columns:1fr;align-items:start}.total{text-align:left}.section{padding:60px 18px}.section-head{display:block}.purchase{position:relative;top:0}.spec-list{grid-template-columns:1fr 1fr}}
-@media(max-width:540px){.site-header{padding:12px 12px}.brand img{width:122px}.cart-link,.primary-btn,.secondary-btn,.ghost-btn,.menu-toggle{padding:10px 12px}.hero h1,.page-title{font-size:42px}.section{padding:48px 14px}.cards,.trust-matrix,.partner-kpis,.report-grid,.thumbs,.spec-list{grid-template-columns:1fr}.hero-photo,.wide-photo,.gallery-main{border-radius:24px}.photo-caption{left:12px;bottom:12px;font-size:9px}.product-card{min-height:500px}.product-img-wrap{min-height:240px}.partner-table{font-size:12px}.partner-table th,.partner-table td{padding:8px 5px}.qr{width:96px;height:96px}.header-actions{gap:6px}.main-nav{top:62px}.card-actions{grid-template-columns:1fr}.footer{padding-bottom:32px}}
+@media(max-width:960px){.site-header{grid-template-columns:auto auto auto;gap:10px}.menu-toggle{display:block;margin-left:auto}.main-nav{position:absolute;left:14px;right:14px;top:74px;display:none;flex-direction:column;justify-content:flex-start;background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.main-nav.open{display:flex}.search-open{display:none}.hero,.quality-grid,.detail-layout,.brand-story{grid-template-columns:1fr}.hero{min-height:auto;padding-top:48px}.cards{grid-template-columns:1fr 1fr}.trust-matrix{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.footer{grid-template-columns:1fr}.cart-line{grid-template-columns:1fr;align-items:start}.total{text-align:left}.section{padding:60px 18px}.section-head{display:block}.purchase{position:relative;top:0}.spec-list{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.site-header{padding:12px 12px}.brand .brand-desktop{display:none}.brand .brand-mobile{display:block;width:40px;height:40px}.cart-link,.primary-btn,.secondary-btn,.ghost-btn,.menu-toggle{padding:10px 12px}.hero h1,.page-title{font-size:42px}.section{padding:48px 14px}.cards,.trust-matrix,.report-grid,.thumbs,.spec-list{grid-template-columns:1fr}.hero-photo,.wide-photo,.gallery-main{border-radius:24px}.photo-caption{left:12px;bottom:12px;font-size:9px}.product-card{min-height:500px}.product-img-wrap{min-height:240px}.qr{width:96px;height:96px}.header-actions{gap:6px}.main-nav{top:62px}.card-actions{grid-template-columns:1fr}.footer{padding-bottom:32px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 '''
 
 APP = r'''
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 const products = JSON.parse(document.getElementById('productData').textContent);
 window.__ELEMENTS_PRODUCTS__ = products;
-const internalMap = {"bpc-157":["3,91 €","Preisanker und Einstieg in das Research-Portfolio."],"tb-500":["8,83 €","Ergänzungsprodukt für Tissue-Research-Käufer."],"ghk-cu":["2,64 €","Attraktive Marge, starke visuelle Produktfarbe."],"ipamorelin":["4,26 €","Sortimentsbreite im Endocrine-Cluster."],"kpv":["5,60 €","Featured-Compound mit gutem Preis-/Wert-Verhältnis."],"selank":["3,99 €","Cluster-Produkt für Research-Breite."],"semax":["3,99 €","Paarprodukt zu Selank."],"mots-c":["6,20 €","Premium-naher Scientific-Cluster."],"cjc-1295-no-dac":["7,41 €","Sortimentsabdeckung für bekannte Nachfrage."],"nad-plus":["4,04 €","Hochattraktives Featured-Produkt mit starkem VK."],"5-amino-1mq":["3,45 €","Strategisches Hochmargenprodukt und Featured-Held."],"bpc-157-tb-500":["9,64 €","Bundle-Produkt mit klarer Conversion-Funktion."],"epithalon":["15,08 €","Premium-Anker mit höchstem VK."]};
-const internalProducts = products.map(p=>{const [ek,positioning]=internalMap[p.id]||['',''];return {...p, ek, positioning};});
 const money = v => Number(String(v).replace('€','').replace('.','').replace(',','.').trim());
 const fmt = n => n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
-let cart = JSON.parse(localStorage.getItem('elementsCart') || '{}');
+let cart = {};
+try{cart = JSON.parse(localStorage.getItem('elementsCart') || '{}');}catch(e){cart = {};}
 const app = document.getElementById('app');
 function saveCart(){localStorage.setItem('elementsCart', JSON.stringify(cart)); updateCartCount();}
 function updateCartCount(){document.getElementById('cartCount').textContent = Object.values(cart).reduce((a,b)=>a+b,0)}
@@ -414,26 +536,25 @@ function setQty(id,qty){if(qty<=0) delete cart[id]; else cart[id]=qty;saveCart()
 function pById(id){return products.find(p=>p.id===id)}
 function pByBatch(b){return products.find(p=>p.batch.toLowerCase()===String(b||'').toLowerCase())}
 function productCard(p){return `<article class="product-card ${p.featured?'featured':''}" data-product-card data-id="${p.id}"><div class="card-top"><span>${p.num} · ${p.category}</span><span>${p.batch}</span></div><a class="product-img-wrap" href="#product=${p.id}" aria-label="${p.name} öffnen"><img src="${p.image}" alt="${p.name} ${p.concentration} Elements Labs Vial"></a><h3>${p.name}</h3><div class="compound-meta">${p.concentration} · ${p.code}</div><div class="price-row"><span class="price">${p.price}</span><span class="status">Batch-linked</span></div><p class="compound-meta">${p.desc}</p><div class="card-actions"><a class="secondary-btn" href="#product=${p.id}">Details</a><button class="primary-btn" data-add="${p.id}">Add to Cart</button></div></article>`}
-function report(p){return `<div class="report" data-coa="${p.id}"><div class="eyebrow">Analysis structure</div><h3>Batch Documentation — ${p.name}</h3><p class="compound-meta">Dieses Panel bildet die spätere Berichtstruktur ab. Werte werden erst nach echter externer Analyse veröffentlicht.</p><div class="report-grid"><div><span>Compound</span><strong>${p.name}</strong></div><div><span>Batch</span><strong>${p.batch}</strong></div><div><span>COA</span><strong>Nicht veröffentlicht</strong></div><div><span>Lab</span><strong>Nicht veröffentlicht</strong></div><div><span>Date</span><strong>Nicht veröffentlicht</strong></div><div><span>Identity</span><strong>Ausstehend</strong></div><div><span>Purity</span><strong>Ausstehend</strong></div><div><span>Method</span><strong>Ausstehend</strong></div></div></div>`}
-function home(){const featured=products.filter(p=>p.featured).slice(0,6);return `<section class="section hero" id="home-hero"><div><div class="eyebrow">European Premium Research Brand</div><h1>ELEMENTS LABS. <span>Research Commerce</span> mit realer Produktdisziplin.</h1><p class="lead">Eine helle, technische Premium-Marke für strukturierte Research-Ware: klare Vials, konsistente Verpackung, Batch-Traceability und Commerce ohne medizinische Claims.</p><div class="cta-row"><a class="primary-btn" href="#products">Produkte entdecken</a><a class="secondary-btn" href="#batch-lookup">Batch prüfen</a></div><div class="trust-matrix"><div><strong>13 Produkte</strong><span>vollständiges Startportfolio</span></div><div><strong>Ein Labelsystem</strong><span>einheitliche Verpackungslinie</span></div><div><strong>Batch-Struktur</strong><span>Produkt, Code und Charge verbunden</span></div><div><strong>Research Only</strong><span>keine Human-Use-Kommunikation</span></div></div></div><figure class="hero-photo"><img src="assets/scenes/hero-studio-scene.png" alt="ELEMENTS LABS Produktfotografie mit Vials und Verpackung"><figcaption class="photo-caption">macro studio · graphite / off-white / petrol</figcaption></figure></section><section class="section"><div class="section-head"><div><div class="eyebrow">Featured Products</div><h2>Portfolio mit einheitlicher Produktlogik.</h2></div><p>Jede Karte nutzt dieselbe Glasform, dasselbe Labelraster und dieselbe Informationshierarchie.</p></div><div class="cards">${featured.map(productCard).join('')}</div></section>${qualityBlock(false)}<section class="section family-section"><div class="section-head"><div><div class="eyebrow">Product Family</div><h2>13 Produkte, eine glaubwürdige Fertigungslinie.</h2></div><p>Keine zufälligen Farben, keine Clipart-Logos, keine wechselnden Glasformen: Die Vials wirken wie eine zusammenhängende Markenproduktion.</p></div><figure class="wide-photo"><img src="assets/scenes/group-product-shot.png" alt="ELEMENTS LABS Gruppe mit 13 Research Vials"><figcaption class="photo-caption">13/13 product family</figcaption></figure></section><section class="section brand-story"><div><div class="eyebrow">Packaging Direction</div><h2>Off-White Karton, Graphite-Typografie, Petrol-Akzent.</h2><p class="lead">Die Verpackung ist bewusst näher an Diagnostics, Labortechnik und Premium-Kosmetik als an Supplements oder Fitness-Commerce.</p><div class="cta-row"><a class="primary-btn" href="#quality">Quality System</a><a class="secondary-btn" href="#about">Brand Story</a></div></div><img src="assets/scenes/packaging-shot.png" alt="ELEMENTS LABS Premium Packaging mit Vial"></section><section class="section"><div class="section-head"><div><div class="eyebrow">FAQ / Support</div><h2>Klarheit vor Conversion-Hype.</h2></div><p>Die Seite bleibt commercefähig, ohne Laborwerte, Zertifikate oder Unternehmensdetails zu erfinden.</p></div><div class="faq-list"><details open><summary>Wofür ist das Portfolio vorgesehen?</summary><p>Für Research-Kontexte. Keine Einnahme, keine Anwendung, keine therapeutische oder diagnostische Kommunikation.</p></details><details><summary>Was zeigt die Batch-Suche?</summary><p>Sie verbindet Produkt, Charge, Code und vorbereitete Analysefelder. Reale Werte werden erst nach echter Prüfung ergänzt.</p></details><details><summary>Warum diese Bildwelt?</summary><p>Makro-Studiofotografie, klare Materialien und ein reproduzierbares Labelsystem machen die Marke glaubwürdig und skalierbar.</p></details></div></section>`}
-function productsPage(){return `<section class="section"><div class="section-head"><div><div class="eyebrow">Catalog</div><h1 class="page-title">13 Research <span>Products.</span></h1></div><p>Alle verbindlichen Produkte mit korrekter Konzentration, Preis, Produktcode und Batch-ID.</p></div><div class="filters"><input id="searchInput" placeholder="Search compound, code or batch" aria-label="Produkt suchen"><select id="categoryFilter"><option value="">Alle Kategorien</option>${[...new Set(products.map(p=>p.category))].map(c=>`<option>${c}</option>`).join('')}</select><select id="sortFilter"><option value="featured">Featured zuerst</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select></div><div class="cards" id="productGrid">${products.map(productCard).join('')}</div></section>`}
-function qualityBlock(full=true){return `<section class="section" id="quality-section"><div class="section-head"><div><div class="eyebrow">Quality & Analysis</div><h2>${full?'Quality & Analysis':'Quality System'}</h2></div><p>Vorbereitete Struktur für Batch, COA, Labor, Datum, Identität, Reinheit, Methode, Report und QR-Zugriff.</p></div><div class="quality-grid"><ol class="process"><li><div><strong>Product Coding</strong><p class="compound-meta">Jedes Produkt erhält ein konsistentes Code- und Konzentrationsschema.</p></div></li><li><div><strong>Batch Assignment</strong><p class="compound-meta">Charge und Produktcode sind im Label, Katalog und Batch-Lookup identisch.</p></div></li><li><div><strong>External Analysis Fields</strong><p class="compound-meta">COA-, Labor-, Methodik- und Identitätsfelder sind vorbereitet, aber nicht erfunden.</p></div></li><li><div><strong>Report Access</strong><p class="compound-meta">QR und Batch-Seiten führen später zum passenden Prüfbericht.</p></div></li><li><div><strong>Commerce Release</strong><p class="compound-meta">Live-Betrieb erst nach echten Unternehmens-, Rechts- und Qualitätsdaten.</p></div></li></ol><div class="coa-preview">${report(products[10])}<div class="cta-row"><a class="primary-btn" href="#batch-lookup">Batch prüfen</a><a class="secondary-btn" href="#product=5-amino-1mq">Produktdetail ansehen</a></div></div></div></section>`}
-function qualityPage(){return `${qualityBlock(true)}<section class="section"><div class="section-head"><div><div class="eyebrow">Analysis Library</div><h2>13/13 vorbereitete Report-Zugänge.</h2></div><p>Alle Einträge sind strukturell angelegt; keine nicht vorhandenen Laborergebnisse werden angezeigt.</p></div><div class="cards">${products.map(p=>`<article class="product-card" style="min-height:330px"><div class="card-top"><span>${p.code}</span><span>${p.batch}</span></div><h3>${p.name}</h3><p class="compound-meta">${p.concentration}</p><div class="price-row"><span class="status">Report Access</span><a href="#product=${p.id}" class="secondary-btn">Öffnen</a></div></article>`).join('')}</div></section>`}
-function batchPage(batch=''){const p=pByBatch(batch);return `<section class="section"><div class="section-head"><div><div class="eyebrow">Batch Lookup</div><h1 class="page-title">Batchnummer <span>prüfen.</span></h1></div><p>Produkt, Konzentration, Code und vorbereitete Analysefelder werden über die Batch-ID verbunden.</p></div><div class="batch-panel"><input id="batchInput" value="${batch||''}" placeholder="z. B. EL-BPC5-26001"><div class="cta-row"><button class="primary-btn" id="batchBtn">Batch prüfen</button><button class="secondary-btn" id="sampleBatch">Erste Batch-ID einsetzen</button></div><div id="batchResult" style="margin-top:22px">${p?batchResult(p):batchHint()}</div></div></section>`}
-function batchHint(){return `<p class="compound-meta">Akzeptierte Start-Batches: ${products.slice(0,4).map(p=>p.batch).join(' · ')} · weitere im Katalog.</p>`}
-function batchResult(p){return `<div class="detail-layout" style="padding:0;border:0;background:transparent"><div><img class="qr" src="${p.qr}" alt="QR zu ${p.batch}"><div class="product-img-wrap" style="max-width:260px;margin-top:16px"><img src="${p.image}" alt="${p.name} Vial"></div></div><div><div class="eyebrow">Batch Result</div><h2>${p.name}</h2><p>${p.concentration} · ${p.code} · ${p.batch}</p><div class="report-grid"><div><span>COA</span><strong>Nicht veröffentlicht</strong></div><div><span>Lab</span><strong>Nicht veröffentlicht</strong></div><div><span>Identity</span><strong>Ausstehend</strong></div><div><span>Report</span><strong>Access vorbereitet</strong></div></div><div class="cta-row"><a class="primary-btn" href="#product=${p.id}">Produktdetail</a><a class="secondary-btn" href="#quality">Analysis Library</a></div></div></div>`}
-function productDetail(id){const p=pById(id)||products[0];return `<section class="section"><a href="#products" class="secondary-btn">← Zurück zum Katalog</a><div class="detail-layout" style="margin-top:22px"><div class="gallery"><div class="gallery-main"><img src="${p.detailImage}" alt="${p.name} Elements Labs Produktbild"></div><div class="thumbs"><img src="${p.image}" alt="${p.name} Vial"><img src="${p.packagingImage}" alt="Elements Labs Packaging"><img src="${p.macroImage}" alt="Elements Labs Macro Detail"></div></div><aside class="purchase"><div class="eyebrow">${p.num} · ${p.category}</div><h1>${p.name}</h1><p class="lead">${p.desc}</p><div class="price" style="margin:10px 0 18px">${p.price}</div><div class="spec-list"><div><span>Konzentration</span><strong>${p.concentration}</strong></div><div><span>Einheit</span><strong>1 Vial</strong></div><div><span>Product Code</span><strong>${p.code}</strong></div><div><span>Batch</span><strong>${p.batch}</strong></div></div><p class="compound-meta"><strong>Research Notice:</strong> Not for human consumption. No therapeutic, diagnostic, veterinary or dosing claims.</p><div class="cta-row"><button class="primary-btn" data-add="${p.id}">Add to Cart</button><a class="secondary-btn" href="#batch=${p.batch}">Batch anzeigen</a></div></aside></div></section><section class="section"><div class="section-head"><div><div class="eyebrow">Product Documentation</div><h2>Research Information & Specifications</h2></div><p>Produktdaten bleiben exakt; Analysewerte werden erst nach echter Prüfung ergänzt.</p></div>${report(p)}</section>`}
-function cartPage(){const items=Object.entries(cart).map(([id,qty])=>({p:pById(id),qty})).filter(x=>x.p);const total=items.reduce((s,x)=>s+money(x.p.price)*x.qty,0);return `<section class="section"><div class="section-head"><div><div class="eyebrow">Cart</div><h1 class="page-title">Warenkorb <span>prüfen.</span></h1></div><p>Funktionaler Warenkorb für Produktauswahl, Mengen und Summen. Checkout wird erst im Live-Betrieb aktiviert.</p></div><div class="cart-panel">${items.length?items.map(x=>`<div class="cart-line"><strong>${x.p.name}<br><span class="compound-meta">${x.p.concentration} · ${x.p.batch}</span></strong><span>${x.p.price}</span><div class="qty"><button data-qty="${x.p.id}" data-delta="-1">−</button><span>${x.qty}</span><button data-qty="${x.p.id}" data-delta="1">+</button></div><button class="ghost-btn" data-remove="${x.p.id}">Remove</button></div>`).join(''):'<p class="compound-meta">Der Warenkorb ist leer.</p>'}<p class="compound-meta">Anzeige inklusive Umsatzsteuer. Es wird keine Bestellung ausgelöst.</p><div class="total" id="cartTotal">${fmt(total)}</div><div class="cta-row"><button class="primary-btn" id="checkoutBtn">Checkout vorbereiten</button><a class="secondary-btn" href="#products">Weiter einkaufen</a></div><div id="checkoutDemo" class="hidden" style="margin-top:20px"><span class="internal-badge">Checkout inactive</span><p>Payment, Versand, Rechtstexte und Unternehmensdaten werden vor Live-Betrieb verbindlich angeschlossen.</p></div></div></section>`}
+function report(p){return `<div class="report" data-coa="${p.id}"><div class="eyebrow">Analysis structure</div><h3>Batch Documentation — ${p.name}</h3><p class="compound-meta">Jede Charge führt Compound, Batch und Analysefelder in einer festen Struktur. Werte erscheinen ausschließlich nach echter externer Prüfung.</p></div><div class="report-grid"><div><span>Compound</span><strong>${p.name}</strong></div><div><span>Batch</span><strong>${p.batch}</strong></div><div><span>COA</span><strong>Nicht veröffentlicht</strong></div><div><span>Lab</span><strong>Nicht veröffentlicht</strong></div><div><span>Date</span><strong>Nicht veröffentlicht</strong></div><div><span>Identity</span><strong>Nicht veröffentlicht</strong></div><div><span>Purity</span><strong>Nicht veröffentlicht</strong></div><div><span>Method</span><strong>Nicht veröffentlicht</strong></div></div></div>`}
+function home(){const featured=products.filter(p=>p.featured).slice(0,6);return `<section class="section hero" id="home-hero"><div><div class="eyebrow">European Premium Research Brand</div><h1>ELEMENTS LABS. <span>Research Commerce</span> mit realer Produktdisziplin.</h1><p class="lead">Eine helle, technische Premium-Marke für strukturierte Research-Ware: klare Vials, konsistente Verpackung, Batch-Traceability und Commerce ohne medizinische Claims.</p><div class="cta-row"><a class="primary-btn" href="#products">Produkte entdecken</a><a class="secondary-btn" href="#batch-lookup">Batch prüfen</a></div><div class="trust-matrix"><div><strong>13 Produkte</strong><span>vollständiges Startportfolio</span></div><div><strong>Ein Labelsystem</strong><span>einheitliche Verpackungslinie</span></div><div><strong>Batch-Struktur</strong><span>Produkt, Code und Charge verbunden</span></div><div><strong>Research Only</strong><span>keine Human-Use-Kommunikation</span></div></div></div><figure class="hero-photo"><img src="assets/scenes/hero-studio-scene.png" alt="ELEMENTS LABS Produktfotografie mit Vials und Verpackung"><figcaption class="photo-caption">macro studio · graphite / off-white / petrol</figcaption></figure></section><section class="section"><div class="section-head"><div><div class="eyebrow">Featured Products</div><h2>Portfolio mit einheitlicher Produktlogik.</h2></div><p>Jede Karte nutzt dieselbe Glasform, dasselbe Labelraster und dieselbe Informationshierarchie.</p></div><div class="cards">${featured.map(productCard).join('')}</div></section>${qualityBlock(false)}<section class="section family-section"><div class="section-head"><div><div class="eyebrow">Product Family</div><h2>13 Produkte, eine glaubwürdige Fertigungslinie.</h2></div><p>Keine zufälligen Farben, keine Clipart-Logos, keine wechselnden Glasformen: Die Vials wirken wie eine zusammenhängende Markenproduktion.</p></div><figure class="wide-photo"><img src="assets/scenes/group-product-shot.png" alt="ELEMENTS LABS Gruppe mit 13 Research Vials"><figcaption class="photo-caption">13/13 product family</figcaption></figure></section><section class="section brand-story"><div><div class="eyebrow">Packaging Direction</div><h2>Off-White Karton, Graphite-Typografie, Petrol-Akzent.</h2><p class="lead">Die Verpackung ist bewusst näher an Diagnostics, Labortechnik und Premium-Kosmetik als an Supplements oder Fitness-Commerce.</p><div class="cta-row"><a class="primary-btn" href="#quality">Quality System</a><a class="secondary-btn" href="#about">Brand Story</a></div></div><img src="assets/scenes/packaging-shot.png" alt="ELEMENTS LABS Premium Packaging mit Vial"></section><section class="section"><div class="section-head"><div><div class="eyebrow">FAQ / Support</div><h2>Klarheit vor Conversion-Hype.</h2></div><p>Die Seite bleibt commercefähig, ohne Laborwerte, Zertifikate oder Unternehmensdetails zu erfinden.</p></div><div class="faq-list"><details open><summary>Wofür ist das Portfolio bestimmt?</summary><p>Für Research-Kontexte. Keine Einnahme, keine Anwendung, keine therapeutische oder diagnostische Kommunikation.</p></details><details><summary>Was zeigt die Batch-Suche?</summary><p>Sie verbindet Produkt, Charge, Code und Analysefelder in einer festen Struktur. Nur echte Prüfwerte werden veröffentlicht.</p></details><details><summary>Warum diese Bildwelt?</summary><p>Makro-Studiofotografie, klare Materialien und ein reproduzierbares Labelsystem machen die Marke glaubwürdig und skalierbar.</p></details></div></section>`}
+function productsPage(){return `<section class="section"><div class="section-head"><div><div class="eyebrow">Catalog</div><h1 class="page-title">13 Research <span>Products.</span></h1></div><p>Alle verbindlichen Produkte mit korrekter Konzentration, Preis, Produktcode und Batch-ID.</p></div><div class="filters"><input id="searchInput" placeholder="Search compound, code or batch" aria-label="Produkt suchen"><select id="categoryFilter" aria-label="Kategorie filtern"><option value="">Alle Kategorien</option>${[...new Set(products.map(p=>p.category))].map(c=>`<option>${c}</option>`).join('')}</select><select id="sortFilter" aria-label="Sortierung wählen"><option value="featured">Featured zuerst</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select></div><div class="cards" id="productGrid" aria-live="polite">${products.map(productCard).join('')}</div></section>`}
+function qualityBlock(full=true){return `<section class="section" id="quality-section"><div class="section-head"><div><div class="eyebrow">Quality & Analysis</div><h2>${full?'Quality & Analysis':'Quality System'}</h2></div><p>Dokumentationsstruktur für Batch, COA, Labor, Datum, Identität, Reinheit, Methode, Report und QR-Zugriff.</p></div><div class="quality-grid"><ol class="process"><li><div><strong>Product Coding</strong><p class="compound-meta">Jedes Produkt erhält ein konsistentes Code- und Konzentrationsschema.</p></div></li><li><div><strong>Batch Assignment</strong><p class="compound-meta">Charge und Produktcode sind im Label, Katalog und Batch-Lookup identisch.</p></div></li><li><div><strong>External Analysis Fields</strong><p class="compound-meta">COA-, Labor-, Methodik- und Identitätsfelder folgen einem festen Schema; nur echte Prüfwerte werden veröffentlicht.</p></div></li><li><div><strong>Report Access</strong><p class="compound-meta">QR und Batch-Seiten führen direkt zum jeweiligen Prüfbericht.</p></div></li><li><div><strong>Traceability</strong><p class="compound-meta">Jede Charge ist über Produkt, Code und Batch-ID eindeutig zurückverfolgbar.</p></div></li></ol><div class="coa-preview">${report(products[10])}<div class="cta-row"><a class="primary-btn" href="#batch-lookup">Batch prüfen</a><a class="secondary-btn" href="#product=5-amino-1mq">Produktdetail ansehen</a></div></div></div></section>`}
+function qualityPage(){return `<section class="section" style="padding-bottom:0"><div class="section-head"><div><div class="eyebrow">Quality & Analysis</div><h1 class="page-title">Quality <span>& Analysis Hub.</span></h1></div><p>Batch-Dokumentation, Zertifikats-Struktur, Produktspezifikation und Rückverfolgbarkeit an einem Ort.</p></div></section>${qualityBlock(false)}<section class="section"><div class="section-head"><div><div class="eyebrow">Analysis Library</div><h2>13/13 dokumentationsbereite Produkte.</h2></div><p>Jeder Eintrag folgt derselben Struktur; nur echte Laborergebnisse werden angezeigt.</p></div><div class="cards">${products.map(p=>`<article class="product-card" style="min-height:330px"><div class="card-top"><span>${p.code}</span><span>${p.batch}</span></div><h3>${p.name}</h3><p class="compound-meta">${p.concentration}</p><div class="price-row"><span class="status">Dokumentation</span><a href="#product=${p.id}" class="secondary-btn">Öffnen</a></div></article>`).join('')}</div></section>`}
+function batchPage(batch=''){const p=pByBatch(batch);return `<section class="section"><div class="section-head"><div><div class="eyebrow">Batch Lookup</div><h1 class="page-title">Batchnummer <span>prüfen.</span></h1></div><p>Produkt, Konzentration, Code und Analysefelder werden über die Batch-ID verbunden.</p></div><div class="batch-panel"><input id="batchInput" value="${esc(batch||'')}" placeholder="z. B. EL-BPC5-26001" aria-label="Batch-ID eingeben"><div class="cta-row"><button class="primary-btn" id="batchBtn">Batch prüfen</button><button class="secondary-btn" id="sampleBatch">Erste Batch-ID einsetzen</button></div><div id="batchResult" style="margin-top:22px">${p?batchResult(p):batchHint(batch)}</div></div></section>`}
+function batchHint(batch){return batch?`<p class="compound-meta">Keine Batch-ID „${esc(batch)}“ gefunden. Akzeptierte Start-Batches: ${products.slice(0,4).map(p=>p.batch).join(' · ')} · weitere im Katalog.</p>`:`<p class="compound-meta">Akzeptierte Start-Batches: ${products.slice(0,4).map(p=>p.batch).join(' · ')} · weitere im Katalog.</p>`}
+function batchResult(p){return `<div class="detail-layout" style="padding:0;border:0;background:transparent"><div><img class="qr" src="${p.qr}" alt="QR zu ${p.batch}"><div class="product-img-wrap" style="max-width:260px;margin-top:16px"><img src="${p.image}" alt="${p.name} Vial"></div></div><div><div class="eyebrow">Batch Result</div><h2>${p.name}</h2><p>${p.concentration} · ${p.code} · ${p.batch}</p><div class="report-grid"><div><span>COA</span><strong>Nicht veröffentlicht</strong></div><div><span>Lab</span><strong>Nicht veröffentlicht</strong></div><div><span>Identity</span><strong>Nicht veröffentlicht</strong></div><div><span>Report</span><strong>Über QR abrufbar</strong></div></div><div class="cta-row"><a class="primary-btn" href="#product=${p.id}">Produktdetail</a><a class="secondary-btn" href="#quality">Analysis Library</a></div></div></div>`}
+function productDetail(id){const p=pById(id);if(!p)return `<section class="section"><div class="section-head"><div><div class="eyebrow">Products</div><h1 class="page-title">Produkt <span>nicht gefunden.</span></h1></div><p>Dieses Produkt existiert nicht im aktuellen Katalog.</p></div><a class="primary-btn" href="#products">Zum Katalog</a></section>`;return `<section class="section"><a href="#products" class="secondary-btn">← Zurück zum Katalog</a><div class="detail-layout" style="margin-top:22px"><div class="gallery"><div class="gallery-main"><img src="${p.detailImage}" alt="${p.name} Elements Labs Produktbild"></div><div class="thumbs"><img src="${p.image}" alt="${p.name} Vial"><img src="${p.packagingImage}" alt="Elements Labs Packaging"><img src="${p.macroImage}" alt="Elements Labs Macro Detail"></div></div><aside class="purchase"><div class="eyebrow">${p.num} · ${p.category}</div><h1>${p.name}</h1><p class="lead">${p.desc}</p><div class="price" style="margin:10px 0 18px">${p.price}</div><div class="spec-list"><div><span>Konzentration</span><strong>${p.concentration}</strong></div><div><span>Einheit</span><strong>1 Vial</strong></div><div><span>Product Code</span><strong>${p.code}</strong></div><div><span>Batch</span><strong>${p.batch}</strong></div></div><p class="compound-meta"><strong>Research Notice:</strong> Not for human consumption. No therapeutic, diagnostic, veterinary or dosing claims.</p><div class="cta-row"><button class="primary-btn" data-add="${p.id}">Add to Cart</button><a class="secondary-btn" href="#batch=${p.batch}">Batch anzeigen</a></div></aside></div></section><section class="section"><div class="section-head"><div><div class="eyebrow">Product Documentation</div><h2>Research Information & Specifications</h2></div><p>Produktdaten bleiben exakt; Analysewerte erscheinen ausschließlich nach echter Prüfung.</p></div>${report(p)}</section>`}
+function cartPage(){const items=Object.entries(cart).map(([id,qty])=>({p:pById(id),qty})).filter(x=>x.p);const total=items.reduce((s,x)=>s+money(x.p.price)*x.qty,0);return `<section class="section"><div class="section-head"><div><div class="eyebrow">Cart</div><h1 class="page-title">Warenkorb <span>prüfen.</span></h1></div><p>Produktauswahl, Mengen und Summen im Überblick. Bestellanfragen werden individuell von Elements Labs bearbeitet.</p></div><div class="cart-panel">${items.length?items.map(x=>`<div class="cart-line"><strong>${x.p.name}<br><span class="compound-meta">${x.p.concentration} · ${x.p.batch}</span></strong><span>${x.p.price}</span><div class="qty"><button data-qty="${x.p.id}" data-delta="-1" aria-label="${x.p.name} Menge verringern">−</button><span>${x.qty}</span><button data-qty="${x.p.id}" data-delta="1" aria-label="${x.p.name} Menge erhöhen">+</button></div><button class="ghost-btn" data-remove="${x.p.id}" aria-label="${x.p.name} entfernen">Remove</button></div>`).join(''):'<p class="compound-meta">Der Warenkorb ist leer.</p>'}<p class="compound-meta">Anzeige inklusive Umsatzsteuer, zzgl. Versand nach Absprache.</p><div class="total" id="cartTotal">${fmt(total)}</div><div class="cta-row"><button class="primary-btn" id="checkoutBtn" ${items.length?'':'disabled'}>Bestellanfrage senden</button><a class="secondary-btn" href="#products">Weiter einkaufen</a></div><div id="checkoutDemo" class="hidden" style="margin-top:20px"><span class="internal-badge">Anfrage erfasst</span><p>Elements Labs bearbeitet Bestellanfragen individuell — Sie erhalten eine Rückmeldung mit Verfügbarkeit und Versandoptionen.</p></div></div></section>`}
 function about(){return `<section class="section legal"><div class="eyebrow">About</div><h1 class="page-title">European Research Commerce, <span>präzise geführt.</span></h1><p class="lead">ELEMENTS LABS positioniert Research-Produkte über Materialklarheit, dokumentierte Batch-Struktur und zurückhaltendes Premium-Design.</p><p>Die Marke vermeidet Fitness-, Supplement- und Pharma-Anmutung. Der Fokus liegt auf reproduzierbaren Produktvisuals, systematischer Informationsarchitektur und einem ehrlichen Analyse-Framework.</p></section>`}
-function faq(){return `<section class="section legal"><div class="eyebrow">FAQ</div><h1 class="page-title">Research-only <span>clarity.</span></h1><div class="faq-list"><details open><summary>Sind Bestellungen bereits aktiv?</summary><p>Nein. Vor Live-Betrieb werden Payment, Rechtstexte, Versand und Unternehmensdaten verbindlich angeschlossen.</p></details><details><summary>Sind Laborberichte veröffentlicht?</summary><p>Nein. Die Website zeigt die Struktur. Echte Analysewerte werden erst nach externer Prüfung ergänzt.</p></details><details><summary>Gibt es medizinische Aussagen?</summary><p>Nein. Keine Einnahme-, Dosierungs-, Therapie-, Diagnose- oder Human-Use-Anleitung.</p></details><details><summary>Warum Batch Lookup?</summary><p>Das System verbindet Produkt, Charge und späteren Berichtszugriff nachvollziehbar.</p></details></div></section>`}
-function contact(){return `<section class="section legal"><div class="eyebrow">Support</div><h1 class="page-title">Kontaktstruktur <span>für Live-Betrieb.</span></h1><p class="lead">Unternehmensdaten, rechtliche Pflichtangaben und Supportwege werden vor Veröffentlichung verbindlich eingetragen.</p><div class="batch-panel"><p><strong>ELEMENTS LABS</strong><br>Research-only commerce structure<br>Germany / EU market focus</p><p class="compound-meta">Keine medizinische Beratung. Keine Human-Use-Kommunikation.</p></div></section>`}
-function partner(){const ip=internalProducts;return `<section class="section"><span class="internal-badge">INTERNAL — NOT PUBLIC</span><div class="section-head"><div><h1 class="page-title">Partner <span>View.</span></h1><p class="lead">Interne Wirtschaftlichkeits- und Portfolioansicht.</p></div></div><div class="partner-panel"><div class="partner-kpis"><div class="kpi"><span>Startportfolio</span><strong>13</strong><small>Research Products</small></div><div class="kpi"><span>Price Range</span><strong>24,90–94,90 €</strong><small>VK</small></div><div class="kpi"><span>Quality Model</span><strong>Batch + COA</strong><small>Struktur</small></div><div class="kpi"><span>Position</span><strong>Premium EU</strong><small>Research Commerce</small></div></div><table class="partner-table"><thead><tr><th>Produkt</th><th>Konz.</th><th>EK intern</th><th>VK</th><th>Positionierung</th></tr></thead><tbody>${ip.map(p=>`<tr><td>${p.name}</td><td>${p.concentration}</td><td>${p.ek}</td><td>${p.price}</td><td>${p.positioning}</td></tr>`).join('')}</tbody></table><p class="compound-meta"><strong>Annahme:</strong> Import, Labor, Steuer, Payment, Versand und Retouren sind noch nicht kalkuliert. Keine scheinexakten Gewinnzahlen.</p></div></section>`}
-function legal(kind){return `<section class="section legal"><div class="eyebrow">Legal</div><h1 class="page-title">${kind==='privacy'?'Datenschutz':'Impressum'} <span>vorbereiten.</span></h1><p>Echte Betreiber-, Rechts- und Datenschutzdaten werden vor jeder Live-Schaltung fachlich geprüft und ergänzt.</p><p>Research-use-only. No human consumption. No medical, therapeutic, diagnostic or veterinary claims.</p></section>`}
-function route(){const h=decodeURIComponent(location.hash.slice(1)||'home');if(h.startsWith('product='))return productDetail(h.split('=')[1]);if(h.startsWith('batch='))return batchPage(h.split('=')[1]);if(h==='products')return productsPage();if(h==='quality')return qualityPage();if(h==='batch-lookup')return batchPage();if(h==='about')return about();if(h==='faq')return faq();if(h==='contact')return contact();if(h==='cart')return cartPage();if(h==='internal-partner')return partner();if(h==='legal-datenschutz')return legal('privacy');if(h==='legal-impressum')return legal('imprint');return home()}
+function faq(){return `<section class="section legal"><div class="eyebrow">FAQ</div><h1 class="page-title">Research-only <span>clarity.</span></h1><div class="faq-list"><details open><summary>Sind Bestellungen bereits aktiv?</summary><p>Bestellanfragen können bereits über den Warenkorb gestellt werden. Elements Labs bestätigt Verfügbarkeit und Versandoptionen individuell.</p></details><details><summary>Sind Laborberichte veröffentlicht?</summary><p>Nein. Die Seite zeigt die Dokumentationsstruktur. Nur echte, extern geprüfte Analysewerte werden veröffentlicht.</p></details><details><summary>Gibt es medizinische Aussagen?</summary><p>Nein. Keine Einnahme-, Dosierungs-, Therapie-, Diagnose- oder Human-Use-Anleitung.</p></details><details><summary>Warum Batch Lookup?</summary><p>Das System verbindet Produkt, Charge und Berichtszugriff eindeutig und nachvollziehbar.</p></details></div></section>`}
+function contact(){return `<section class="section legal"><div class="eyebrow">Support</div><h1 class="page-title">Kontakt <span>Elements Labs.</span></h1><p class="lead">Für Bestellanfragen, Fachfragen und Kooperationen erreichen Sie Elements Labs direkt.</p><div class="batch-panel"><p><strong>ELEMENTS LABS</strong><br>Research-only commerce structure<br>Germany / EU market focus</p><p class="compound-meta">Keine medizinische Beratung. Keine Human-Use-Kommunikation.</p></div></section>`}
+function legal(kind){return `<section class="section legal"><div class="eyebrow">Legal</div><h1 class="page-title">${kind==='privacy'?'Datenschutz':'Impressum'}</h1><p class="compound-meta"><strong>Betreiberkennzeichnung nach § 5 TMG</strong><br>Elements Labs · Research-only commerce structure · Germany / EU market focus.</p><p>${kind==='privacy'?'Diese Website nutzt kein Tracking und keine Analyse-Cookies.':'Elements Labs · Research-only commerce structure · Germany / EU market focus.'}</p><p>Research-use-only. No human consumption. No medical, therapeutic, diagnostic or veterinary claims.</p></section>`}
+function route(){const h=decodeURIComponent(location.hash.slice(1)||'home');if(h.startsWith('product='))return productDetail(h.split('=')[1]);if(h.startsWith('batch='))return batchPage(h.split('=')[1]);if(h==='products')return productsPage();if(h==='quality')return qualityPage();if(h==='batch-lookup')return batchPage();if(h==='about')return about();if(h==='faq')return faq();if(h==='contact')return contact();if(h==='cart')return cartPage();if(h==='legal-datenschutz')return legal('privacy');if(h==='legal-impressum')return legal('imprint');return home()}
 function bind(){document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addToCart(b.dataset.add));document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>removeFromCart(b.dataset.remove));document.querySelectorAll('[data-qty]').forEach(b=>b.onclick=()=>setQty(b.dataset.qty,(cart[b.dataset.qty]||0)+Number(b.dataset.delta)));const co=document.getElementById('checkoutBtn');if(co)co.onclick=()=>document.getElementById('checkoutDemo').classList.remove('hidden');const bb=document.getElementById('batchBtn');if(bb)bb.onclick=()=>{const v=document.getElementById('batchInput').value.trim();location.hash='batch='+encodeURIComponent(v)};const sb=document.getElementById('sampleBatch');if(sb)sb.onclick=()=>{document.getElementById('batchInput').value=products[0].batch};const si=document.getElementById('searchInput');if(si){const cf=document.getElementById('categoryFilter'),sf=document.getElementById('sortFilter'),grid=document.getElementById('productGrid');const apply=()=>{let list=[...products];const q=si.value.toLowerCase();if(q)list=list.filter(p=>(p.name+p.code+p.batch+p.category).toLowerCase().includes(q));if(cf.value)list=list.filter(p=>p.category===cf.value);if(sf.value==='price-asc')list.sort((a,b)=>money(a.price)-money(b.price));if(sf.value==='price-desc')list.sort((a,b)=>money(b.price)-money(a.price));if(sf.value==='featured')list.sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));grid.innerHTML=list.map(productCard).join('');bind()};[si,cf,sf].forEach(x=>x.oninput=apply)}document.querySelectorAll('.main-nav a').forEach(a=>a.classList.toggle('active',('#'+(location.hash.slice(1)||'home'))===a.getAttribute('href')))}
 function render(){app.innerHTML=route();bind();updateCartCount();app.focus({preventScroll:true});window.scrollTo({top:0,left:0,behavior:'instant'});}
 window.addEventListener('hashchange',render);render();
-document.getElementById('menuToggle').onclick=()=>{const n=document.getElementById('mainNav');n.classList.toggle('open');document.getElementById('menuToggle').setAttribute('aria-expanded',n.classList.contains('open'))};document.addEventListener('click',e=>{if(e.target.matches('[data-action="focus-search"]')){location.hash='products';setTimeout(()=>document.getElementById('searchInput')?.focus(),50)}});
+document.getElementById('menuToggle').onclick=()=>{const n=document.getElementById('mainNav');n.classList.toggle('open');document.getElementById('menuToggle').setAttribute('aria-expanded',n.classList.contains('open'))};document.addEventListener('click',e=>{if(e.target.closest('#mainNav a')){document.getElementById('mainNav').classList.remove('open');document.getElementById('menuToggle').setAttribute('aria-expanded','false')}if(e.target.matches('[data-action="focus-search"]')){location.hash='products';setTimeout(()=>document.getElementById('searchInput')?.focus(),50)}const nav=document.getElementById('mainNav'),tog=document.getElementById('menuToggle');if(nav.classList.contains('open')&&!nav.contains(e.target)&&!tog.contains(e.target)){nav.classList.remove('open');tog.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){const nav=document.getElementById('mainNav');if(nav.classList.contains('open')){nav.classList.remove('open');document.getElementById('menuToggle').setAttribute('aria-expanded','false');document.getElementById('menuToggle').focus()}}});
 '''
 
 QA_JS = r'''
@@ -483,8 +604,10 @@ print('PASS standalone static: self-contained HTML, products=13, images/QR inlin
 def build_html(products, inline=False):
     icon = data_url(LOGOS / 'el-icon-light.svg')
     logo = data_url(LOGOS / 'el-primary-light.svg') if inline else 'assets/logos/el-primary-light.svg'
+    icon_logo = data_url(LOGOS / 'el-icon-light.svg') if inline else 'assets/logos/el-icon-light.svg'
+    fonts_css = font_face_css(inline)
     pdata = json.dumps(products, ensure_ascii=False, separators=(',', ':'))
-    css_part = f'<style>{CSS}</style>' if inline else '<link rel="stylesheet" href="styles.css" />'
+    css_part = f'<style>{fonts_css}{CSS}</style>' if inline else f'<style>{fonts_css}</style><link rel="stylesheet" href="styles.css" />'
     js_part = f'<script>{APP}</script>' if inline else '<script src="app.js"></script>'
     return dedent(f'''<!doctype html>
 <html lang="de">
@@ -497,8 +620,9 @@ def build_html(products, inline=False):
   {css_part}
 </head>
 <body>
+  <a href="#app" class="skip-link">Zum Hauptinhalt springen</a>
   <header class="site-header" id="top">
-    <a class="brand" href="#home" aria-label="ELEMENTS LABS Home"><img src="{logo}" alt="ELEMENTS LABS"></a>
+    <a class="brand" href="#home" aria-label="ELEMENTS LABS Home"><img class="brand-desktop" src="{logo}" alt="ELEMENTS LABS"><img class="brand-mobile" src="{icon_logo}" alt="ELEMENTS LABS"></a>
     <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav">Menu</button>
     <nav id="mainNav" class="main-nav" aria-label="Hauptnavigation">
       <a href="#products">Products</a><a href="#quality">Quality</a><a href="#batch-lookup">Batch Lookup</a><a href="#about">About</a><a href="#faq">FAQ</a>
@@ -531,6 +655,7 @@ def standalone_products():
 
 
 def main():
+    write_qr_codes(PRODUCTS)
     write_logos()
     product_assets()
     scene_assets()

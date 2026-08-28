@@ -1,0 +1,31 @@
+{
+  "timestamp_utc": "2026-08-28T12:27:51Z",
+  "claude_code_cli": {
+    "auth_status": {
+      "loggedIn": true,
+      "authMethod": "claude.ai",
+      "apiProvider": "firstParty",
+      "email": "eduard.wart@googlemail.com",
+      "subscriptionType": "max"
+    },
+    "mini_test_prompt": "Antworte ausschließlich mit CLAUDE_OK",
+    "mini_test_result": "CLAUDE_OK",
+    "status": "AVAILABLE"
+  },
+  "codex_cli": {
+    "version": "codex-cli 0.147.0",
+    "login": "Logged in using ChatGPT",
+    "mini_test_prompt": "Reply exactly CODEX_OK",
+    "mini_test_result": "CODEX_OK",
+    "status": "AVAILABLE"
+  },
+  "qwen_ollama": {
+    "status": "RESTRICTED",
+    "note": "Nicht als Haupt-Executor fuer FLAGSHIP/Enterprise/website_production/design_refinement/visuelle QA zulaessig. Nur kleine Hilfstasks."
+  },
+  "routing_decision_elements_labs": {
+    "umsetzung": "claude-code-cli (AVAILABLE)",
+    "qa_debugging": "codex-cli (AVAILABLE)",
+    "verboten": "qwen2.5:3b als Flagship-Hauptexecutor"
+  }
+}
