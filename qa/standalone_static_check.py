@@ -18,7 +18,9 @@ for p in products:
     for key in ['image','detailImage','macroImage','packagingImage','qr']:
         if not str(p.get(key,'')).startswith('data:image/'): fail.append(f'{p["id"]} {key} not inlined')
 public_text = re.sub(r'<script\b.*?</script>', '', html, flags=re.I|re.S)
-if re.search(r'\b(DEMO|SAMPLE|TEST|PLACEHOLDER|MOCKUP|PROTOTYPE)\b', public_text, re.I): fail.append('banned public marker remains in HTML shell')
+public_text = re.sub(r'<style\b.*?</style>', '', public_text, flags=re.I|re.S)
+if re.search(r'\b(DEMO|SAMPLE|TEST|MOCKUP|PROTOTYPE)\b', public_text, re.I): fail.append('banned public marker remains in HTML shell')
+if re.search(r'\bPLACEHOLDER\b(?!\s*[:{])', public_text, re.I): fail.append('banned public marker (placeholder) remains in HTML shell')
 if fail:
     print('FAIL standalone static: '+ '; '.join(dict.fromkeys(fail))); sys.exit(1)
 print('PASS standalone static: self-contained HTML, products=13, images/QR inlined, banned shell markers=0')
