@@ -48,12 +48,13 @@ PRODUCTS = [
     dict(id='kpv', num='05', name='KPV', concentration='10 mg', price='36,90 €', code='EL-KPV-010', batch='EL-KPV10-26001', category='Tripeptide Research', featured=True, desc='Tripeptid für In-vitro-Research-Informationen mit klarer Chargenführung.'),
     dict(id='selank', num='06', name='Selank', concentration='5 mg', price='27,90 €', code='EL-SEL-005', batch='EL-SEL5-26001', category='Neuropeptide Research', featured=False, desc='Heptapeptid für neurochemische Forschungsmodelle ohne Human-Use-Kommunikation.'),
     dict(id='semax', num='07', name='Semax', concentration='5 mg', price='27,90 €', code='EL-SMX-005', batch='EL-SMX5-26001', category='Neuropeptide Research', featured=False, desc='Research Compound für Laborstudien an Peptid- und Signalpfad-Modellen.'),
-    dict(id='mots-c', num='08', name='MOTS-C', concentration='10 mg', price='36,90 €', code='EL-MOT-010', batch='EL-MOT10-26001', category='Mitochondrial Research', featured=True, desc='Mitochondrialer Research-Kontext für analytische Zellmodell-Dokumentation.'),
+    dict(id='mots-c', num='08', name='MOTS-C', concentration='10-40 mg', price='36,90 €', code='EL-MOT-010', batch='EL-MOT10-26001', category='Mitochondrial Research', featured=True, desc='Mitochondrialer Research-Kontext für analytische Zellmodell-Dokumentation.'),
     dict(id='cjc-1295-no-dac', num='09', name='CJC-1295 No DAC', concentration='5 mg', price='36,90 €', code='EL-CJC-005', batch='EL-CJC5-26001', category='Endocrine Research', featured=False, desc='No-DAC Research Compound für strukturierte Rezeptor- und Signalmodell-Prüfung.'),
     dict(id='nad-plus', num='10', name='NAD+', concentration='500 mg', price='44,90 €', code='EL-NAD-500', batch='EL-NAD500-26001', category='Cofactor Research', featured=True, desc='Cofactor-Research-Produkt mit technischer Chargen- und Produktcodierung.'),
     dict(id='5-amino-1mq', num='11', name='5-Amino-1MQ', concentration='5 mg', price='54,90 €', code='EL-AMQ-005', batch='EL-AMQ5-26001', category='Metabolic Research', featured=True, desc='Premium-nahes Research Compound für Labor- und Stoffwechselmodell-Kontexte.'),
     dict(id='bpc-157-tb-500', num='12', name='BPC-157 + TB-500', concentration='5 mg + 5 mg', price='46,90 €', code='EL-BT-010', batch='EL-BT10-26001', category='Research Bundle', featured=True, desc='Kombinierte Research-Ware für einheitliche Tissue-Research-Portfolioführung.'),
     dict(id='epithalon', num='13', name='Epithalon', concentration='50 mg', price='94,90 €', code='EL-EPI-050', batch='EL-EPI50-26001', category='Longevity Research', featured=True, desc='Premium-Anker im Sortiment für dokumentierte Labor- und Peptidmodell-Analyse.'),
+    dict(id='retatrutide', num='14', name='Retatrutide', concentration='10-30 mg', price='64,90 €', code='EL-RET-010', batch='EL-RET10-26001', category='Metabolic Research', featured=True, desc='Triple-Agonist-Peptid für Stoffwechsel- und Rezeptormodell-Forschung.'),
 ]
 
 for product in PRODUCTS:
@@ -282,38 +283,55 @@ STUDIO_BG = BASE / 'studio-bg-final-2.jpg'
 
 
 def build_continuous_label(product, w, h):
-    """One single continuous label panel (no split, no seam): EL monogram,
-    ELEMENTS LABS wordmark, product name, concentration, product code, batch,
-    QR/analysis corner, Research Use Only line."""
+    """One single continuous label panel (no split, no seam), matching the
+    Eddy-approved reference layout exactly:
+      EL-mark + ELEMENTS LABS wordmark (top-left, horizontal)
+      Product name (large, bold)
+      Concentration in mg (medium, graphite)
+      RESEARCH USE ONLY (small, bold)
+      --- divider line ---
+      QR code (bottom-left) + Batch code (bottom-right)
+    """
     label = Image.new('RGBA', (w, h), rgba(OFF_WHITE, 250))
     label = add_noise(label, amount=6, alpha=10)
     d = ImageDraw.Draw(label)
     d.rounded_rectangle([0, 0, w - 1, h - 1], radius=int(h * 0.05), outline=rgba(LINE, 255), width=2)
-    d.rectangle([0, 0, w, max(4, int(h * 0.035))], fill=rgba(PETROL, 255))
 
-    pad = int(w * 0.09)
-    mark_s = int(h * 0.15)
-    draw_el_mark(d, pad, int(h * 0.09), mark_s, dark=False, img=label)
-    d.text((pad + mark_s * 1.30, int(h * 0.095)), 'ELEMENTS LABS', font=font(int(h * 0.075), True), fill=rgba(GRAPHITE, 255))
-    d.text((pad + mark_s * 1.30, int(h * 0.095) + int(h * 0.082)), product['code'], font=font(int(h * 0.045), False, True), fill=rgba(MUTED, 255))
+    pad = int(w * 0.10)
 
-    line_y = int(h * 0.34)
+    # Header: EL mark + wordmark, horizontal lockup
+    mark_s = int(h * 0.12)
+    mark_y = int(h * 0.07)
+    draw_el_mark(d, pad, mark_y, mark_s, dark=False, img=label)
+    d.text((pad + mark_s * 1.35, mark_y + mark_s * 0.08), 'ELEMENTS', font=font(int(h * 0.052), True), fill=rgba(GRAPHITE, 255))
+    d.text((pad + mark_s * 1.35, mark_y + mark_s * 0.08 + int(h * 0.052)), 'LABS', font=font(int(h * 0.052), True), fill=rgba(GRAPHITE, 255))
+
+    # Product name (large, bold, near-black)
+    name_y = int(h * 0.34)
+    name_size = int(h * 0.135) if len(product['name']) < 12 else int(h * 0.10)
+    d.text((pad, name_y), product['name'], font=font(name_size, True), fill=rgba(NEAR_BLACK, 255))
+
+    # Concentration (graphite, medium)
+    conc_y = name_y + int(h * 0.145)
+    d.text((pad, conc_y), product['concentration'], font=font(int(h * 0.075), True), fill=rgba(GRAPHITE, 255))
+
+    # Research Use Only
+    research_y = conc_y + int(h * 0.095)
+    d.text((pad, research_y), 'RESEARCH USE ONLY', font=font(int(h * 0.042), True), fill=rgba(GRAPHITE, 255))
+
+    # Divider line
+    line_y = research_y + int(h * 0.075)
     d.line([pad, line_y, w - pad, line_y], fill=rgba(LINE, 255), width=2)
 
-    name_size = int(h * 0.125) if len(product['name']) < 12 else int(h * 0.095)
-    d.text((w // 2, int(h * 0.46)), product['name'], font=font(name_size, True), fill=rgba(NEAR_BLACK, 255), anchor='mm')
-    d.text((w // 2, int(h * 0.58)), product['concentration'], font=font(int(h * 0.09), True), fill=rgba(PETROL, 255), anchor='mm')
-
-    line_y2 = int(h * 0.70)
-    d.line([pad, line_y2, w - pad, line_y2], fill=rgba(LINE, 255), width=1)
-
-    d.text((pad, int(h * 0.76)), 'Research Use Only', font=font(int(h * 0.05), True), fill=rgba(GRAPHITE, 255))
-    d.text((pad, int(h * 0.855)), product['batch'], font=font(int(h * 0.042), False, True), fill=rgba(MUTED, 255))
-
-    qr_size = int(h * 0.22)
-    qr_box = (w - pad - qr_size, int(h * 0.72), w - pad, int(h * 0.72) + qr_size)
+    # Footer: QR (bottom-left) + Batch (bottom-right)
+    qr_size = int(h * 0.155)
+    qr_y = line_y + int(h * 0.045)
+    qr_box = (pad, qr_y, pad + qr_size, qr_y + qr_size)
     paste_qr(label, product, qr_box)
-    d.text((w - pad - qr_size, qr_box[3] + int(h * 0.01)), 'Analysis', font=font(int(h * 0.035), False, True), fill=rgba(MUTED, 255))
+
+    batch_y = qr_y + qr_size // 2
+    d.text((w - pad, batch_y), 'BATCH', font=font(int(h * 0.032), True), fill=rgba(MUTED, 255), anchor='rs')
+    d.text((w - pad, batch_y + int(h * 0.038)), product['batch'], font=font(int(h * 0.04), True, True), fill=rgba(GRAPHITE, 255), anchor='ra')
 
     return label
 
@@ -419,32 +437,106 @@ def product_assets():
 
 
 def scene_assets():
-    # Hero scene: real studio backdrop + 3 vials + 1 packaging box, all grounded
-    # on one shared contact-shadow line so nothing floats.
-    bg = studio_bg_crop((1800, 1280)).convert('RGBA')
-    bg = add_noise(bg, amount=3, alpha=6)
+    # Hero scene: bright studio backdrop + reflective steel tray + 3 vials +
+    # 1 packaging box, matching the Eddy-approved reference layout: vials and
+    # box standing ON a tray with soft mirror reflections beneath them.
+    canvas_w, canvas_h = 1800, 1280
+    bg = Image.new('RGBA', (canvas_w, canvas_h), rgba(OFF_WHITE, 255))
+    bgd = ImageDraw.Draw(bg)
+    # Soft vertical light gradient (bright top -> slightly warmer bottom) for a
+    # believable studio cyclorama instead of a flat fill.
+    for y in range(canvas_h):
+        k = y / canvas_h
+        v = int(250 - k * 14)
+        bgd.line([(0, y), (canvas_w, y)], fill=(v, v, v - 1, 255))
+    bg = add_noise(bg, amount=3, alpha=5)
     d = ImageDraw.Draw(bg)
 
+    tray_y = 990
+    tray_h = 46
+    tray_cx = canvas_w * 0.52
+    tray_w = 1180
+
+    # Tray drop shadow on the backdrop
     shadow = Image.new('RGBA', bg.size, (0, 0, 0, 0))
     sd = ImageDraw.Draw(shadow)
-    sd.ellipse([260, 990, 950, 1060], fill=(13, 17, 21, 55))
-    sd.ellipse([980, 995, 1550, 1065], fill=(13, 17, 21, 45))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(22))
+    sd.ellipse([tray_cx - tray_w * 0.52, tray_y + tray_h - 10, tray_cx + tray_w * 0.52, tray_y + tray_h + 46], fill=(13, 17, 21, 60))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(26))
     bg.alpha_composite(shadow)
+
+    # Reflective steel tray: elliptical top face + thin dark rim
+    tray_top = Image.new('RGBA', bg.size, (0, 0, 0, 0))
+    td = ImageDraw.Draw(tray_top)
+    top_box = [tray_cx - tray_w / 2, tray_y - tray_h * 0.34, tray_cx + tray_w / 2, tray_y + tray_h * 0.34]
+    td.ellipse(top_box, fill=(214, 217, 219, 255))
+    # subtle horizontal sheen bands across the tray face
+    for i, (yy, a) in enumerate([(-0.14, 60), (0.0, 90), (0.14, 40)]):
+        band = Image.new('RGBA', bg.size, (0, 0, 0, 0))
+        bd = ImageDraw.Draw(band)
+        bd.ellipse([top_box[0] + 40, tray_y + yy * tray_h - 4, top_box[2] - 40, tray_y + yy * tray_h + 4], fill=(255, 255, 255, a))
+        band = band.filter(ImageFilter.GaussianBlur(10))
+        tray_top.alpha_composite(band)
+    rim_box = [top_box[0], top_box[1] + 6, top_box[2], top_box[3] + 14]
+    td.ellipse(rim_box, outline=(150, 154, 157, 255), width=3)
+    bg.alpha_composite(tray_top)
 
     box = Image.open(BOX_MASTER).convert('RGBA')
     bw, bh = box.size
     bscale = 400 / bw
     box_r = box.resize((int(bw * bscale), int(bh * bscale)), Image.Resampling.LANCZOS)
     box_h = box_r.size[1]
-    bg.alpha_composite(box_r, (1180, 1030 - box_h))
+    box_x, box_y = 1180, tray_y - box_h + 18
+    bg.alpha_composite(box_r, (box_x, box_y))
 
     positions = [(PRODUCTS[10], 660), (PRODUCTS[9], 500), (PRODUCTS[12], 520)]
     xs = [700, 410, 990]
-    ground_y = 1015
+    ground_y = tray_y + 6
+    vial_slots = []
     for (p, target_h_v), x in zip(positions, xs):
         vial = compose_vial(p, int(target_h_v * 0.62), target_h_v)
-        bg.alpha_composite(vial, (x, ground_y - target_h_v))
+        vy = ground_y - target_h_v
+        bg.alpha_composite(vial, (x, vy))
+        vial_slots.append((vial, x, vy, target_h_v))
+
+    # Faint mirrored reflection of each vial + the box on the tray surface
+    refl_layer = Image.new('RGBA', bg.size, (0, 0, 0, 0))
+    for vial, x, vy, target_h_v in vial_slots:
+        flipped = vial.transpose(Image.FLIP_TOP_BOTTOM)
+        refl_h = int(target_h_v * 0.38)
+        flipped = flipped.crop((0, 0, flipped.width, refl_h))
+        # fade out the reflection
+        fade = Image.new('L', flipped.size, 0)
+        fd = ImageDraw.Draw(fade)
+        for yy in range(refl_h):
+            a = int(95 * (1 - yy / refl_h))
+            fd.line([(0, yy), (flipped.width, yy)], fill=a)
+        r, g, b, a0 = flipped.split()
+        a_combined = ImageChops.multiply(a0, fade)
+        flipped = Image.merge('RGBA', (r, g, b, a_combined))
+        refl_layer.alpha_composite(flipped, (x, ground_y))
+    box_flipped = box_r.transpose(Image.FLIP_TOP_BOTTOM)
+    box_refl_h = int(box_h * 0.30)
+    box_flipped = box_flipped.crop((0, 0, box_flipped.width, box_refl_h))
+    fade_b = Image.new('L', box_flipped.size, 0)
+    fbd = ImageDraw.Draw(fade_b)
+    for yy in range(box_refl_h):
+        a = int(80 * (1 - yy / box_refl_h))
+        fbd.line([(0, yy), (box_flipped.width, yy)], fill=a)
+    rb, gb, bb, ab0 = box_flipped.split()
+    ab_combined = ImageChops.multiply(ab0, fade_b)
+    box_flipped = Image.merge('RGBA', (rb, gb, bb, ab_combined))
+    refl_layer.alpha_composite(box_flipped, (box_x, ground_y))
+    bg.alpha_composite(refl_layer)
+
+    # Contact shadows directly under each vial/box for grounding
+    contact = Image.new('RGBA', bg.size, (0, 0, 0, 0))
+    cd = ImageDraw.Draw(contact)
+    for vial, x, vy, target_h_v in vial_slots:
+        vw = vial.width
+        cd.ellipse([x - vw * 0.08, ground_y - 8, x + vw * 1.08, ground_y + 14], fill=(13, 17, 21, 70))
+    cd.ellipse([box_x - 20, ground_y - 8, box_x + box_r.width + 20, ground_y + 12], fill=(13, 17, 21, 55))
+    contact = contact.filter(ImageFilter.GaussianBlur(9))
+    bg.alpha_composite(contact)
 
     # No text overlay on the hero photo itself — it is pure product photography,
     # matching the approved reference (headline/copy live in the HTML layer).
@@ -612,9 +704,11 @@ CSS = r'''
 .status{font:750 10px var(--mono);color:var(--petrol);text-transform:uppercase;letter-spacing:.06em}
 .card-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
 .card-actions .secondary-btn{padding:9px 14px;font-size:12.5px;flex:1;text-align:center}
-.price-row .primary-btn{width:36px;height:36px;padding:0;display:grid;place-items:center;flex-shrink:0;font-size:0;border-radius:50%}
+.price-row .primary-btn{width:38px;height:38px;padding:0;display:grid;place-items:center;flex-shrink:0;font-size:0;border-radius:6px;background:var(--petrol);border-color:var(--petrol)}
 
-.price-row .primary-btn:before{content:"+";font-size:20px;line-height:1;color:#fff;font-family:var(--sans)}
+.price-row .primary-btn:hover{background:var(--near-black);border-color:var(--near-black)}
+
+.price-row .primary-btn svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:1.8}
 .quality-suite{background:var(--near-black);border-radius:var(--radius-lg);overflow:hidden;display:grid;grid-template-columns:1.3fr 1fr}
 .quality-suite .quality-copy{padding:52px 48px;color:var(--off-white)}
 .quality-suite .quality-copy .eyebrow{color:#7FB3BE}
@@ -623,26 +717,41 @@ CSS = r'''
 .quality-suite .quality-copy a.link-arrow{color:#fff;font:750 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:2px}
 .quality-suite .quality-photo{position:relative;overflow:hidden;background:#0A0D10}
 .quality-suite .quality-photo img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
-.batch-suite{background:#fff;color:var(--ink);padding:44px 40px;border-radius:var(--radius-lg);border:1px solid var(--line);border-top:3px solid var(--petrol)}
+.batch-suite{background:var(--petrol);color:#fff;padding:44px 40px;border-radius:var(--radius-lg)}
 
-.batch-suite .eyebrow{color:var(--petrol)}
 
-.batch-suite h2{color:var(--near-black);font-size:clamp(24px,2.3vw,30px);line-height:1.12;letter-spacing:-.02em;margin:0 0 12px;font-weight:700}
 
-.batch-suite p{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 22px}
+.batch-suite .eyebrow{color:rgba(255,255,255,.72)}
+
+
+
+.batch-suite h2{color:#fff;font-size:clamp(24px,2.3vw,30px);line-height:1.12;letter-spacing:-.02em;margin:0 0 12px;font-weight:700}
+
+
+
+.batch-suite p{color:rgba(255,255,255,.78);font-size:13.5px;line-height:1.6;margin:0 0 22px}
+
+
 
 .batch-suite .batch-input-row{display:flex;gap:10px}
 
-.batch-suite input{flex:1;padding:14px 16px;border-radius:8px;border:1px solid var(--line);background:#F6F8F8;color:var(--ink);font-size:14px}
 
-.batch-suite input:focus{outline:none;border-color:var(--petrol);background:#fff}
 
-.batch-suite input::placeholder{color:var(--muted)}
-.batch-suite .batch-submit{width:48px;height:48px;border-radius:8px;border:none;background:var(--petrol);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0}
+.batch-suite input{flex:1;padding:14px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:14px}
 
-.batch-suite .batch-submit:hover{background:var(--near-black)}
 
-.batch-suite .link-arrow{display:inline-block;margin-top:16px;color:var(--graphite);font:750 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);padding-bottom:2px}
+
+.batch-suite input:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.16)}
+
+
+
+.batch-suite input::placeholder{color:rgba(255,255,255,.6)}
+
+.batch-suite .batch-submit{width:48px;height:48px;border-radius:8px;border:none;background:#fff;color:var(--petrol);font-size:18px;cursor:pointer;flex-shrink:0}
+
+.batch-suite .batch-submit:hover{background:var(--off-white)}
+
+.batch-suite .link-arrow{display:inline-block;margin-top:16px;color:#fff;font:750 12px var(--mono);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:2px}
 .quality-batch-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:24px;align-items:stretch}
 .process{counter-reset:step;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
 .process li{counter-increment:step;position:relative;padding:16px 16px 16px 52px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}
@@ -685,7 +794,15 @@ CSS = r'''
 .faq-list details{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px}
 .faq-list summary{font-weight:700;cursor:pointer;font-size:14px}
 .legal{max-width:820px}
-.family-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.family-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+
+.family-grid .fg-brand{background:var(--near-black);color:#fff;border-radius:var(--radius);padding:24px 18px;display:flex;flex-direction:column;justify-content:space-between;height:220px}
+
+.family-grid .fg-brand .fg-mark{width:34px;height:34px;margin-bottom:10px}
+
+.family-grid .fg-brand p{font-size:14px;line-height:1.4;font-weight:700;margin:0}
+
+.family-grid .fg-brand a{color:#fff;font:750 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:2px;align-self:flex-start;margin-top:10px}
 .family-grid figure{margin:0;border-radius:var(--radius);overflow:hidden;background:#F1F3F4;position:relative}
 .family-grid img{width:100%;height:220px;object-fit:cover;display:block}
 .family-grid figcaption{position:absolute;left:14px;bottom:14px;color:#fff;font-size:13px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.5)}
@@ -742,15 +859,15 @@ function removeFromCart(id){delete cart[id];saveCart();render()}
 function setQty(id,qty){if(qty<=0) delete cart[id]; else cart[id]=qty;saveCart();render()}
 function pById(id){return products.find(p=>p.id===id)}
 function pByBatch(b){return products.find(p=>p.batch.toLowerCase()===String(b||'').toLowerCase())}
-function productCard(p){return `<article class="product-card ${p.featured?'featured':''}" data-product-card data-id="${p.id}"><div class="card-top"><span>${p.num}</span><span>${p.batch}</span></div><a class="product-img-wrap" href="#product=${p.id}" aria-label="${p.name} öffnen"><img src="${p.image}" alt="${p.name} ${p.concentration} Elements Labs Vial"></a><h3>${p.name}</h3><div class="compound-meta">${p.concentration}</div><div class="price-row"><span class="price">${p.price}</span><button class="primary-btn" data-add="${p.id}" aria-label="${p.name} zum Warenkorb hinzufügen" title="Add to Cart"></button></div></article>`}
+function productCard(p){return `<article class="product-card ${p.featured?'featured':''}" data-product-card data-id="${p.id}"><div class="card-top"><span>${p.num}</span><span>${p.batch}</span></div><a class="product-img-wrap" href="#product=${p.id}" aria-label="${p.name} öffnen"><img src="${p.image}" alt="${p.name} ${p.concentration} Elements Labs Vial"></a><h3>${p.name}</h3><div class="compound-meta">${p.concentration}</div><div class="price-row"><span class="price">${p.price}</span><button class="primary-btn" data-add="${p.id}" aria-label="${p.name} zum Warenkorb hinzufügen" title="Add to Cart"><svg viewBox="0 0 24 24"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1" fill="#fff" stroke="none"/><circle cx="18" cy="20" r="1" fill="#fff" stroke="none"/><path d="M6 6L4 3H2"/></svg></button></div></article>`}
 function report(p){return `<div class="report" data-coa="${p.id}"><div class="eyebrow">Batch Documentation</div><h3>${p.name}</h3><div class="report-grid"><div><span>Product Code</span><strong>${p.code}</strong></div><div><span>Batch</span><strong>${p.batch}</strong></div></div><p class="doc-note">Laboratory Analysis: No verified external report is currently linked to this batch. Certificates appear here automatically once issued.</p></div>`}
-function home(){const featured=products.filter(p=>p.featured).slice(0,6);return `<section class="section hero" id="home-hero"><div><div class="eyebrow">European Research Brand</div><h1>ELEMENTS LABS.<br><span>Precision research</span> commerce.</h1><p class="lead">High-purity research compounds. Rigorous batch traceability. Engineered for serious research.</p><div class="cta-row"><a class="primary-btn" href="#products">Explore Products</a><a class="secondary-btn" href="#quality">Quality &amp; Documentation</a></div><div class="trust-row"><div><div class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></div><strong>Research Use</strong><span>For laboratory research purposes only.</span></div><div><div class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg></div><strong>Quality Assured</strong><span>Strict sourcing and quality control.</span></div><div><div class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/></svg></div><strong>Batch Traceability</strong><span>Traceable batches and documentation for every lot.</span></div></div></div><figure class="hero-photo"><img src="assets/scenes/hero-studio-scene.png" alt="ELEMENTS LABS Produktfotografie mit Vials und Verpackung"></figure></section><section class="section"><div class="section-head"><div><div class="eyebrow">Featured Products</div><h2>13 Produkte, ein Standard.</h2></div><a class="secondary-btn" href="#products">Alle Produkte</a></div><div class="cards">${featured.map(productCard).join('')}</div></section>${qualityBatchBlock()}${researchLibrarySection()}${familySection()}<section class="section"><div class="section-head"><div><div class="eyebrow">FAQ / Support</div><h2>Häufige Fragen.</h2></div><p>Antworten zu Bestellung, Dokumentation und Research-Einsatz.</p></div><div class="faq-list"><details open><summary>Wofür ist das Portfolio bestimmt?</summary><p>Für Research-Kontexte. Keine Einnahme, keine Anwendung, keine therapeutische oder diagnostische Kommunikation.</p></details><details><summary>Was zeigt die Batch-Suche?</summary><p>Sie verbindet Produkt, Charge, Code und Analysefelder in einer festen Struktur. Nur echte Prüfwerte werden veröffentlicht.</p></details></div></section>`}
-function researchLibrarySection(){return `<section class="section"><div class="section-head"><div><div class="eyebrow">Research Library</div><h2>13 quellenbasierte Research Profiles.</h2></div><a class="secondary-btn" href="#quality">Zur Research Library</a></div><div class="cards">${products.slice(0,6).map(p=>{const rp=(window.__ELEMENTS_RESEARCH__||{})[p.id];return `<article class="product-card" style="min-height:190px"><div class="card-top"><span>${p.num}</span><span>${esc(p.category)}</span></div><h3>${p.name}</h3><p class="compound-meta">${rp?esc(rp.research_focus||''):esc(p.category)+' — Profil folgt.'}</p><div class="price-row" style="margin-top:auto;padding-top:14px"><a class="secondary-btn" href="#product=${p.id}">Research Profile</a></div></article>`;}).join('')}</div></section>`}
-function familySection(){const cats=[{name:'Peptides',count:products.filter(p=>p.category.includes('Peptide')||p.category.includes('Tissue')).length,img:'assets/scenes/group-product-shot.png'},{name:'Regenerative',count:products.filter(p=>p.category.includes('Copper')||p.category.includes('Tripeptide')).length,img:'assets/scenes/packaging-shot.png'},{name:'Longevity',count:products.filter(p=>p.category.includes('Longevity')||p.category.includes('Cofactor')).length,img:'assets/scenes/macro-detail.png'},{name:'Metabolic',count:products.filter(p=>p.category.includes('Metabolic')||p.category.includes('Mitochondrial')||p.category.includes('Endocrine')||p.category.includes('Neuropeptide')).length,img:'assets/scenes/family-metabolic-shot.png'}];return `<section class="section family-section"><div class="section-head"><div><div class="eyebrow">Our Product Families</div><h2>Our Product Families.</h2></div><a class="secondary-btn" href="#products">View All Products</a></div><div class="family-grid">${cats.map(c=>`<figure><img src="${c.img}" alt="ELEMENTS LABS ${c.name}"><figcaption>${c.name}<span>${c.count} products</span></figcaption></figure>`).join('')}</div></section>`}
-function productsPage(){return `<section class="section"><div class="section-head"><div><div class="eyebrow">Catalog</div><h1 class="page-title">13 Research <span>Products.</span></h1></div><p>Alle verbindlichen Produkte mit korrekter Konzentration, Preis, Produktcode und Batch-ID.</p></div><div class="filters"><input id="searchInput" placeholder="Search compound, code or batch" aria-label="Produkt suchen"><select id="categoryFilter" aria-label="Kategorie filtern"><option value="">Alle Kategorien</option>${[...new Set(products.map(p=>p.category))].map(c=>`<option>${c}</option>`).join('')}</select><select id="sortFilter" aria-label="Sortierung wählen"><option value="featured">Featured zuerst</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select></div><div class="cards" id="productGrid" aria-live="polite">${products.map(productCard).join('')}</div></section>`}
+function home(){const featured=products.filter(p=>p.featured).slice(0,6);return `<section class="section hero" id="home-hero"><div><div class="eyebrow">European Research Brand</div><h1>ELEMENTS LABS.<br><span>Precision research</span> commerce.</h1><p class="lead">High-purity research compounds. Rigorous batch traceability. Engineered for serious research.</p><div class="cta-row"><a class="primary-btn" href="#products">Explore Products</a><a class="secondary-btn" href="#quality">Quality &amp; Documentation</a></div><div class="trust-row"><div><div class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg></div><strong>Research Use</strong><span>For laboratory research purposes only.</span></div><div><div class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg></div><strong>Quality Assured</strong><span>Strict sourcing and quality control.</span></div><div><div class="trust-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/></svg></div><strong>Batch Traceability</strong><span>Traceable batches and documentation for every lot.</span></div></div></div><figure class="hero-photo"><img src="assets/scenes/hero-studio-scene.png" alt="ELEMENTS LABS Produktfotografie mit Vials und Verpackung"></figure></section><section class="section"><div class="section-head"><div><div class="eyebrow">Featured Products</div><h2>14 Produkte, ein Standard.</h2></div><a class="secondary-btn" href="#products">Alle Produkte</a></div><div class="cards">${featured.map(productCard).join('')}</div></section>${qualityBatchBlock()}${researchLibrarySection()}${familySection()}<section class="section"><div class="section-head"><div><div class="eyebrow">FAQ / Support</div><h2>Häufige Fragen.</h2></div><p>Antworten zu Bestellung, Dokumentation und Research-Einsatz.</p></div><div class="faq-list"><details open><summary>Wofür ist das Portfolio bestimmt?</summary><p>Für Research-Kontexte. Keine Einnahme, keine Anwendung, keine therapeutische oder diagnostische Kommunikation.</p></details><details><summary>Was zeigt die Batch-Suche?</summary><p>Sie verbindet Produkt, Charge, Code und Analysefelder in einer festen Struktur. Nur echte Prüfwerte werden veröffentlicht.</p></details></div></section>`}
+function researchLibrarySection(){return `<section class="section"><div class="section-head"><div><div class="eyebrow">Research Library</div><h2>14 quellenbasierte Research Profiles.</h2></div><a class="secondary-btn" href="#quality">Zur Research Library</a></div><div class="cards">${products.slice(0,6).map(p=>{const rp=(window.__ELEMENTS_RESEARCH__||{})[p.id];return `<article class="product-card" style="min-height:190px"><div class="card-top"><span>${p.num}</span><span>${esc(p.category)}</span></div><h3>${p.name}</h3><p class="compound-meta">${rp?esc(rp.research_focus||''):esc(p.category)+' — Profil folgt.'}</p><div class="price-row" style="margin-top:auto;padding-top:14px"><a class="secondary-btn" href="#product=${p.id}">Research Profile</a></div></article>`;}).join('')}</div></section>`}
+function familySection(){const cats=[{name:'Peptides',count:products.filter(p=>p.category.includes('Peptide')||p.category.includes('Tissue')).length,img:'assets/scenes/group-product-shot.png'},{name:'Regenerative',count:products.filter(p=>p.category.includes('Copper')||p.category.includes('Tripeptide')).length,img:'assets/scenes/packaging-shot.png'},{name:'Longevity',count:products.filter(p=>p.category.includes('Longevity')||p.category.includes('Cofactor')).length,img:'assets/scenes/macro-detail.png'},{name:'Metabolic',count:products.filter(p=>p.category.includes('Metabolic')||p.category.includes('Mitochondrial')||p.category.includes('Endocrine')||p.category.includes('Neuropeptide')).length,img:'assets/scenes/family-metabolic-shot.png'}];return `<section class="section family-section"><div class="section-head"><div><div class="eyebrow">Our Product Families</div><h2>Our Product Families.</h2></div><a class="secondary-btn" href="#products">View All Products</a></div><div class="family-grid">${cats.map(c=>`<figure><img src="${c.img}" alt="ELEMENTS LABS ${c.name}"><figcaption>${c.name}<span>${c.count} products</span></figcaption></figure>`).join('')}<div class="fg-brand"><svg class="fg-mark" viewBox="0 0 34 34"><defs><mask id="fgmark"><rect x="0" y="0" width="34.00" height="34.00" fill="white"/><polygon points="16.32,19.01 16.09,18.89 10.99,22.60 10.88,22.98 13.32,24.90 13.80,24.87 16.29,22.86" fill="black"/></mask></defs><polygon points="16.52,2.49 6.38,9.66 6.43,25.22 15.67,32.17 18.70,29.78 9.75,23.26 9.52,19.86 16.21,14.89 16.35,10.77 9.75,14.95 9.58,11.87 16.52,6.74" fill="#F7F7F8" mask="url(#fgmark)"/><polygon points="20.26,4.28 17.08,6.77 17.11,27.39 18.73,28.87 27.20,22.79 26.86,18.48 20.34,22.86" fill="#0D5B6B"/></svg><p>${products.length} precision compounds.<br>One standard: Excellence.</p><a href="#products">View All Products →</a></div></div></section>`}
+function productsPage(){return `<section class="section"><div class="section-head"><div><div class="eyebrow">Catalog</div><h1 class="page-title">14 Research <span>Products.</span></h1></div><p>Alle verbindlichen Produkte mit korrekter Konzentration, Preis, Produktcode und Batch-ID.</p></div><div class="filters"><input id="searchInput" placeholder="Search compound, code or batch" aria-label="Produkt suchen"><select id="categoryFilter" aria-label="Kategorie filtern"><option value="">Alle Kategorien</option>${[...new Set(products.map(p=>p.category))].map(c=>`<option>${c}</option>`).join('')}</select><select id="sortFilter" aria-label="Sortierung wählen"><option value="featured">Featured zuerst</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select></div><div class="cards" id="productGrid" aria-live="polite">${products.map(productCard).join('')}</div></section>`}
 function qualityBatchBlock(){return `<section class="section" id="quality-section"><div class="quality-batch-grid"><div class="quality-suite"><div class="quality-copy"><div class="eyebrow">Quality &amp; Analysis</div><h2>Uncompromising quality.<br>Complete transparency.</h2><p>Jede Charge folgt derselben Dokumentationsstruktur: Produktcode, Batch-ID, Analysefelder und QR-Zugriff sind konsistent verknüpft.</p><a class="link-arrow" href="#quality">Learn more about our quality →</a></div><div class="quality-photo"><img src="assets/scenes/quality-hand-vial.png" alt="ELEMENTS LABS Quality Verification"></div></div><div class="batch-suite"><div class="eyebrow">Batch Lookup</div><h2>Verify your batch.<br>Instantly.</h2><p>Enter your batch number to view documentation and product details.</p><div class="batch-input-row"><input id="batchInputHome" placeholder="Enter batch number" aria-label="Batch-ID eingeben"><button class="batch-submit" id="batchSubmitHome" aria-label="Batch prüfen">→</button></div><a class="link-arrow" href="#batch-lookup">How to find your batch →</a></div></div></section>`}
 function qualityBlock(full=true){return qualityBatchBlock()}
-function qualityPage(){return `<section class="section" style="padding-bottom:0"><div class="section-head"><div><div class="eyebrow">Quality & Analysis</div><h1 class="page-title">Quality <span>& Analysis Hub.</span></h1></div><p>Batch-Dokumentation, Zertifikats-Struktur, Produktspezifikation und Rückverfolgbarkeit an einem Ort.</p></div></section>${qualityBatchBlock()}<section class="section"><div class="section-head"><div><div class="eyebrow">Analysis Library</div><h2>13/13 Produkte dokumentiert.</h2></div><p>Jeder Eintrag folgt derselben Struktur; Laborwerte erscheinen, sobald sie extern verifiziert sind.</p></div><div class="cards">${products.map(p=>`<article class="product-card" style="min-height:220px"><div class="card-top"><span>${p.code}</span><span>${p.batch}</span></div><h3>${p.name}</h3><p class="compound-meta">${p.concentration}</p><div class="price-row"><span class="status">Dokumentation</span><a href="#product=${p.id}" class="secondary-btn">Öffnen</a></div></article>`).join('')}</div></section>`}
+function qualityPage(){return `<section class="section" style="padding-bottom:0"><div class="section-head"><div><div class="eyebrow">Quality & Analysis</div><h1 class="page-title">Quality <span>& Analysis Hub.</span></h1></div><p>Batch-Dokumentation, Zertifikats-Struktur, Produktspezifikation und Rückverfolgbarkeit an einem Ort.</p></div></section>${qualityBatchBlock()}<section class="section"><div class="section-head"><div><div class="eyebrow">Analysis Library</div><h2>14/14 Produkte dokumentiert.</h2></div><p>Jeder Eintrag folgt derselben Struktur; Laborwerte erscheinen, sobald sie extern verifiziert sind.</p></div><div class="cards">${products.map(p=>`<article class="product-card" style="min-height:220px"><div class="card-top"><span>${p.code}</span><span>${p.batch}</span></div><h3>${p.name}</h3><p class="compound-meta">${p.concentration}</p><div class="price-row"><span class="status">Dokumentation</span><a href="#product=${p.id}" class="secondary-btn">Öffnen</a></div></article>`).join('')}</div></section>`}
 function batchPage(batch=''){const p=pByBatch(batch);return `<section class="section"><div class="section-head"><div><div class="eyebrow">Batch Lookup</div><h1 class="page-title">Batchnummer <span>prüfen.</span></h1></div><p>Produkt, Konzentration, Code und Analysefelder werden über die Batch-ID verbunden.</p></div><div class="batch-panel"><input id="batchInput" value="${esc(batch||'')}" placeholder="z. B. EL-BPC5-26001" aria-label="Batch-ID eingeben"><div class="cta-row"><button class="primary-btn" id="batchBtn">Batch prüfen</button><button class="secondary-btn" id="sampleBatch">Erste Batch-ID einsetzen</button></div><div id="batchResult" style="margin-top:22px">${p?batchResult(p):batchHint(batch)}</div></div></section>`}
 function batchHint(batch){return batch?`<p class="compound-meta">Keine Batch-ID „${esc(batch)}“ gefunden. Akzeptierte Start-Batches: ${products.slice(0,4).map(p=>p.batch).join(' · ')} · weitere im Katalog.</p>`:`<p class="compound-meta">Akzeptierte Start-Batches: ${products.slice(0,4).map(p=>p.batch).join(' · ')} · weitere im Katalog.</p>`}
 function batchResult(p){return `<div class="detail-layout" style="padding:0;border:0;background:transparent"><div><img class="qr" src="${p.qr}" alt="QR zu ${p.batch}"><div class="product-img-wrap" style="max-width:260px;margin-top:16px"><img src="${p.image}" alt="${p.name} Vial"></div></div><div><div class="eyebrow">Batch Result</div><h2>${p.name}</h2><p>${p.concentration} · ${p.code} · ${p.batch}</p><div class="report-grid"><div><span>Product Code</span><strong>${p.code}</strong></div><div><span>Batch</span><strong>${p.batch}</strong></div></div><p class="doc-note">Laboratory Analysis: No verified external report is currently linked to this batch.</p><div class="cta-row"><a class="primary-btn" href="#product=${p.id}">Produktdetail</a><a class="secondary-btn" href="#quality">Research Library</a></div></div></div>`}
@@ -773,9 +890,9 @@ const fs=require('fs');const path=require('path');const http=require('http');con
 function getJson(url){return new Promise((resolve,reject)=>{const req=http.request(url,res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{try{resolve(JSON.parse(d))}catch(e){reject(new Error('bad json '+d.slice(0,200)))}})});req.on('error',reject);req.end();});}
 class CDP{constructor(ws){this.ws=ws;this.id=1;this.pending=new Map();this.errors=[];this.sessionId=null;this.ws.onmessage=ev=>{const msg=JSON.parse(ev.data);if(msg.id&&this.pending.has(msg.id)){this.pending.get(msg.id)(msg);this.pending.delete(msg.id);return;}const m=msg.method,p=msg.params||{};if(m==='Runtime.exceptionThrown')this.errors.push('exception: '+(p.exceptionDetails?.exception?.description||p.exceptionDetails?.text||JSON.stringify(p.exceptionDetails)).slice(0,500));if(m==='Runtime.consoleAPICalled'&&p.type==='error')this.errors.push('console.error: '+(p.args||[]).map(a=>a.value||a.description||'').join(' ').slice(0,500));if(m==='Log.entryAdded'&&p.entry?.level==='error')this.errors.push('log.error: '+(p.entry.text||'').slice(0,500));};}async open(){if(this.ws.readyState===1)return;await new Promise((res,rej)=>{this.ws.onopen=res;this.ws.onerror=rej;});}async send(method,params={},sessionId=this.sessionId){const id=this.id++;const payload={id,method,params};if(sessionId)payload.sessionId=sessionId;this.ws.send(JSON.stringify(payload));const msg=await new Promise((res,rej)=>{const t=setTimeout(()=>{this.pending.delete(id);rej(new Error('CDP timeout '+method));},15000);this.pending.set(id,m=>{clearTimeout(t);res(m);});});if(msg.error)throw new Error(method+' '+JSON.stringify(msg.error));return msg.result;}close(){this.ws.close();}}
 const root=process.argv[2]||'C:/Users/eduar/elements-lab-flagship';const file=process.argv[3]||'index.html';const outDir=path.join(root,'evidence','screenshots');fs.mkdirSync(outDir,{recursive:true});
-const expected=[['bpc-157','BPC-157','5 mg','24,90 €','EL-BPC5-26001','EL-BPC-005'],['tb-500','TB-500','5 mg','36,90 €','EL-TB5-26001','EL-TB5-005'],['ghk-cu','GHK-Cu','50 mg','27,90 €','EL-GHK50-26001','EL-GHK-050'],['ipamorelin','Ipamorelin','5 mg','27,90 €','EL-IPA5-26001','EL-IPA-005'],['kpv','KPV','10 mg','36,90 €','EL-KPV10-26001','EL-KPV-010'],['selank','Selank','5 mg','27,90 €','EL-SEL5-26001','EL-SEL-005'],['semax','Semax','5 mg','27,90 €','EL-SMX5-26001','EL-SMX-005'],['mots-c','MOTS-C','10 mg','36,90 €','EL-MOT10-26001','EL-MOT-010'],['cjc-1295-no-dac','CJC-1295 No DAC','5 mg','36,90 €','EL-CJC5-26001','EL-CJC-005'],['nad-plus','NAD+','500 mg','44,90 €','EL-NAD500-26001','EL-NAD-500'],['5-amino-1mq','5-Amino-1MQ','5 mg','54,90 €','EL-AMQ5-26001','EL-AMQ-005'],['bpc-157-tb-500','BPC-157 + TB-500','5 mg + 5 mg','46,90 €','EL-BT10-26001','EL-BT-010'],['epithalon','Epithalon','50 mg','94,90 €','EL-EPI50-26001','EL-EPI-050']];
+const expected=[['bpc-157','BPC-157','5 mg','24,90 €','EL-BPC5-26001','EL-BPC-005'],['tb-500','TB-500','5 mg','36,90 €','EL-TB5-26001','EL-TB5-005'],['ghk-cu','GHK-Cu','50 mg','27,90 €','EL-GHK50-26001','EL-GHK-050'],['ipamorelin','Ipamorelin','5 mg','27,90 €','EL-IPA5-26001','EL-IPA-005'],['kpv','KPV','10 mg','36,90 €','EL-KPV10-26001','EL-KPV-010'],['selank','Selank','5 mg','27,90 €','EL-SEL5-26001','EL-SEL-005'],['semax','Semax','5 mg','27,90 €','EL-SMX5-26001','EL-SMX-005'],['mots-c','MOTS-C','10-40 mg','36,90 €','EL-MOT10-26001','EL-MOT-010'],['cjc-1295-no-dac','CJC-1295 No DAC','5 mg','36,90 €','EL-CJC5-26001','EL-CJC-005'],['nad-plus','NAD+','500 mg','44,90 €','EL-NAD500-26001','EL-NAD-500'],['5-amino-1mq','5-Amino-1MQ','5 mg','54,90 €','EL-AMQ5-26001','EL-AMQ-005'],['bpc-157-tb-500','BPC-157 + TB-500','5 mg + 5 mg','46,90 €','EL-BT10-26001','EL-BT-010'],['epithalon','Epithalon','50 mg','94,90 €','EL-EPI50-26001','EL-EPI-050'],['retatrutide','Retatrutide','10-30 mg','64,90 €','EL-RET10-26001','EL-RET-010']];
 (async()=>{const v=await getJson('http://127.0.0.1:9333/json/version');const c=new CDP(new WebSocket(v.webSocketDebuggerUrl));await c.open();const t=await c.send('Target.createTarget',{url:'about:blank'},null);const a=await c.send('Target.attachToTarget',{targetId:t.targetId,flatten:true},null);c.sessionId=a.sessionId;for(const m of ['Page.enable','Runtime.enable','Log.enable','DOM.enable'])await c.send(m,{});const failures=[],evidence=[];const url=h=>'file:///'+root.replace(/\\/g,'/')+'/'+file+'#'+(h||'home');const fail=m=>failures.push(m);const assert=(cond,msg)=>{if(!cond)fail(msg)};async function evalJS(expr){const r=await c.send('Runtime.evaluate',{expression:expr,returnByValue:true,awaitPromise:true});if(r.exceptionDetails){fail('JS exception '+(r.exceptionDetails.exception?.description||r.exceptionDetails.text||''));return null}return r.result.value}async function waitFor(expr,timeout=7000){const s=Date.now();while(Date.now()-s<timeout){if(await evalJS(`Boolean(${expr})`))return true;await new Promise(r=>setTimeout(r,80));}fail('wait timeout '+expr);return false}async function viewport(w,h){await c.send('Emulation.setDeviceMetricsOverride',{width:w,height:h,deviceScaleFactor:1,mobile:w<600});}async function nav(h,sel='#app'){await c.send('Page.navigate',{url:url(h)});await waitFor(`document.readyState==='complete' && document.querySelector(${JSON.stringify(sel)})`,9000);await new Promise(r=>setTimeout(r,180));}async function click(sel){await evalJS(`(()=>{const e=document.querySelector(${JSON.stringify(sel)}); if(!e)return false; e.scrollIntoView({block:'center',behavior:'instant'}); e.click(); return true})()`);await new Promise(r=>setTimeout(r,150));}async function setInput(sel,val){await evalJS(`(()=>{const e=document.querySelector(${JSON.stringify(sel)}); e.focus(); e.value=${JSON.stringify(val)}; e.dispatchEvent(new Event('input',{bubbles:true})); e.dispatchEvent(new Event('change',{bubbles:true})); return e.value;})()`);await new Promise(r=>setTimeout(r,120));}async function setSelect(sel,val){await evalJS(`(()=>{const e=document.querySelector(${JSON.stringify(sel)}); e.value=${JSON.stringify(val)}; e.dispatchEvent(new Event('input',{bubbles:true})); e.dispatchEvent(new Event('change',{bubbles:true})); return e.value;})()`);await new Promise(r=>setTimeout(r,120));}async function snap(name,full=false){const res=await c.send('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:full});const p=path.join(outDir,name+'.png');fs.writeFileSync(p,Buffer.from(res.data,'base64'));evidence.push('screenshot: '+p);return p}async function clipSnap(name,sel){await evalJS(`(()=>{const e=document.querySelector(${JSON.stringify(sel)}); if(e) e.scrollIntoView({block:'center',behavior:'instant'});})()`);await new Promise(r=>setTimeout(r,200));const r=await evalJS(`(()=>{const e=document.querySelector(${JSON.stringify(sel)}); if(!e)return null; const b=e.getBoundingClientRect(); return {x:Math.max(0,Math.round(b.left)),y:Math.max(0,Math.round(b.top)),width:Math.round(Math.min(innerWidth,b.width)),height:Math.round(Math.min(innerHeight,b.height))};})()`);if(r&&r.width>10&&r.height>10){const full=await c.send('Page.captureScreenshot',{format:'png'});const p=path.join(outDir,name+'-full.png');fs.writeFileSync(p,Buffer.from(full.data,'base64'));fs.writeFileSync(path.join(outDir,name+'-rect.json'),JSON.stringify(r));evidence.push('screenshot(pending crop): '+p);}}
-await viewport(1440,1050);await nav('products','[data-product-card]');let res=await evalJS(`(()=>{const body=document.body.innerText; const cards=[...document.querySelectorAll('[data-product-card]')]; const products=window.__ELEMENTS_PRODUCTS__||[]; const imgs=[...document.images].map(i=>({src:i.getAttribute('src'),complete:i.complete,nw:i.naturalWidth})); return {body,count:cards.length,dataCount:products.length,imgs};})()`);assert(res.count===13,`product cards ${res.count} != 13`);assert(res.dataCount===13,`product data ${res.dataCount} != 13`);for(const [id,n,conc,price,batch,code] of expected){assert(res.body.includes(n),'missing '+n);assert(res.body.includes(conc),'missing '+conc);assert(res.body.includes(price),'missing '+price);assert(res.body.includes(batch),'missing '+batch);}assert(res.imgs.every(i=>i.complete&&i.nw>0),'one or more product images not loaded');evidence.push('Product hard check PASS: 13/13 names, concentrations, prices, batches, image loads (product code shown on detail/batch pages by design).');await setInput('#searchInput','nad');let r=await evalJS(`(()=>({count:document.querySelectorAll('[data-product-card]').length,text:document.body.innerText}))()`);assert(r.count===1&&r.text.includes('NAD+')&&r.text.includes('500 mg'),'search nad failed');await setInput('#searchInput','');await setSelect('#sortFilter','price-desc');r=await evalJS(`(()=>{const card=document.querySelector('[data-product-card]');return {name:card.querySelector('h3').innerText,price:card.querySelector('.price').innerText};})()`);assert(r.name==='Epithalon'&&r.price.includes('94,90'),'sort price-desc failed');evidence.push('Catalog interactions PASS: search and sort.');
+await viewport(1440,1050);await nav('products','[data-product-card]');let res=await evalJS(`(()=>{const body=document.body.innerText; const cards=[...document.querySelectorAll('[data-product-card]')]; const products=window.__ELEMENTS_PRODUCTS__||[]; const imgs=[...document.images].map(i=>({src:i.getAttribute('src'),complete:i.complete,nw:i.naturalWidth})); return {body,count:cards.length,dataCount:products.length,imgs};})()`);assert(res.count===14,`product cards ${res.count} != 14`);assert(res.dataCount===14,`product data ${res.dataCount} != 14`);for(const [id,n,conc,price,batch,code] of expected){assert(res.body.includes(n),'missing '+n);assert(res.body.includes(conc),'missing '+conc);assert(res.body.includes(price),'missing '+price);assert(res.body.includes(batch),'missing '+batch);}assert(res.imgs.every(i=>i.complete&&i.nw>0),'one or more product images not loaded');evidence.push('Product hard check PASS: 13/13 names, concentrations, prices, batches, image loads (product code shown on detail/batch pages by design).');await setInput('#searchInput','nad');let r=await evalJS(`(()=>({count:document.querySelectorAll('[data-product-card]').length,text:document.body.innerText}))()`);assert(r.count===1&&r.text.includes('NAD+')&&r.text.includes('500 mg'),'search nad failed');await setInput('#searchInput','');await setSelect('#sortFilter','price-desc');r=await evalJS(`(()=>{const card=document.querySelector('[data-product-card]');return {name:card.querySelector('h3').innerText,price:card.querySelector('.price').innerText};})()`);assert(r.name==='Epithalon'&&r.price.includes('94,90'),'sort price-desc failed');evidence.push('Catalog interactions PASS: search and sort.');
 for(const h of ['home','products','quality','batch-lookup','about','faq','contact','cart','legal-impressum','legal-datenschutz']){await nav(h,'#app');const body=await evalJS('document.body.innerText');assert(body.length>220,'route too short '+h);assert(!/\b(DEMO|SAMPLE|TEST|PLACEHOLDER|MOCKUP|PROTOTYPE)\b/.test(body),'visible banned marker on '+h);assert(!/Atomlogo|DNA|Molecule|molecule/i.test(body),'old logo marker on '+h);}evidence.push('Public route scan PASS: banned visible markers 0; old atom/DNA/molecule references 0.');
 for(const [id,n,conc,price,batch,code] of expected){await nav('product='+id,'[data-coa]');const body=await evalJS('document.body.innerText');assert(body.includes(n)&&body.includes(conc)&&body.includes(price)&&body.includes(batch)&&body.includes(code),'product detail incomplete '+id);assert(!/\b(DEMO|SAMPLE|TEST|PLACEHOLDER|MOCKUP|PROTOTYPE)\b/.test(body),'banned marker on detail '+id);}evidence.push('Product detail PASS: 13/13 complete and no banned public markers.');
 for(const [id,n,conc,price,batch,code] of expected){await nav('batch='+encodeURIComponent(batch),'#batchResult');r=await evalJS(`(()=>{const body=document.body.innerText; const img=document.querySelector('.qr'); return {body,complete:img&&img.complete,nw:img&&img.naturalWidth,src:img&&img.getAttribute('src')};})()`);assert(r.body.includes(n)&&r.body.includes(conc)&&r.body.includes(batch)&&r.body.includes(code),'batch incomplete '+batch);assert(r.complete&&r.nw>0,'QR not loaded '+batch);if(file.includes('standalone'))assert(String(r.src).startsWith('data:image/png;base64,'),'standalone QR not data URL '+batch);}evidence.push('Batch PASS: 13/13 batch IDs resolve with QR.');
@@ -798,7 +915,7 @@ outside = re.sub(r'<script\b.*?</script>', '', html, flags=re.I|re.S)
 bad = re.findall(r'\b(?:src|href)=["\'](?!#|mailto:|tel:|https?:|data:)[^"\']+', outside, re.I)
 if bad: fail.append('relative html dependency remains '+json.dumps(bad[:10]))
 products = json.loads(re.search(r'<script id="productData" type="application/json">(.*?)</script>', html, re.S).group(1))
-if len(products)!=13: fail.append('product data count !=13')
+if len(products)!=14: fail.append('product data count !=14')
 for key in ['name','concentration','price','batch','code','image','detailImage','qr']:
     if any(not p.get(key) for p in products): fail.append('missing '+key)
 for p in products:
@@ -810,7 +927,7 @@ if re.search(r'\b(DEMO|SAMPLE|TEST|MOCKUP|PROTOTYPE)\b', public_text, re.I): fai
 if re.search(r'\bPLACEHOLDER\b(?!\s*[:{])', public_text, re.I): fail.append('banned public marker (placeholder) remains in HTML shell')
 if fail:
     print('FAIL standalone static: '+ '; '.join(dict.fromkeys(fail))); sys.exit(1)
-print('PASS standalone static: self-contained HTML, products=13, images/QR inlined, banned shell markers=0')
+print('PASS standalone static: self-contained HTML, products=14, images/QR inlined, banned shell markers=0')
 '''
 
 
@@ -1358,6 +1475,23 @@ RESEARCH_PROFILES = {
             }
         ]
     },
+        "retatrutide": {
+        "research_class": "Triple-Hormone-Receptor Agonist Peptide (GIP/GLP-1/GCG)",
+        "molecular_type": "Recombinant single-chain 30-amino-acid peptide (Liner-1 agonist, LY3437943) mit verlängerter Serum-Halbwertszeit durch Albumin-Binding",
+        "research_focus": "Retatrutide wird in Phase-3-Studien zur Behandlung von Adipositas und Typ-2-Diabetes untersucht. Hauptziel ist die Reduktion von Körpergewicht und Verbesserung der postprandialen Glukosekontrolle.",
+        "mechanism_summary": "Das Peptid agoniert simultan an GIP-, GLP-1- und Glucagon-Rezeptoren (GCGR). Die GIP- und GLP-1-Aktivierung fördern Insulinausschüttung und verlangsamen Magenentleerung, während die GCGR-Aktivierung eine moderate Glukagon-Aktivierung erzeugt, die Fettverbrennung stimuliert. Diese Triple-Agonismus-Kombination führt in klinischen Studien zu signifikant stärkerer Gewichtsreduktion als einzelne GLP-1- oder GIP-Agonisten.",
+        "research_context": "Retatrutide (LY3437943) wurde von Eli Lilly entwickelt und ist in Phase-3-Studien (SURMOUNT-4/5, TRIUMPH) aktuell aktiv. Zugelassen in den USA nur im Rahmen klinischer Studien, nicht als Handelsprodukt.",
+        "evidence_summary": "Klinische Evidenz: Phase-2-Studie (Jastreboff et al., NEJM 2023) zeigte dosisabhängige Gewichtsreduktion (bis 24,5% bei 12 mg). Phase-2b/3 Sub-Studie (Sanyal et al., Nature Medicine 2024) reduzierte Leberfett um bis zu 86%. Präklinische Daten (Coskun et al., Cell Metabolism 2022) bestätigen das Triple-Agonist-Profil in Tiermodellen.",
+        "key_research_topics": ["Triple-Hormone-Receptor Agonismus", "Adipositas-Therapie", "Typ-2-Diabetes", "NAFLD/MASLD", "Gewichtsreduktion", "Glykemische Kontrolle"],
+        "limitations": "Langfristige Sicherheitsdaten (>48 Wochen) sind begrenzt. Studienpopulationen waren überwiegend adipös mit Typ-2-Diabetes; Daten zu alleiniger Adipositas ohne Diabetes sind limitiert. Keine Langzeitdaten bei schweren Nieren- oder Herz-Kreislauf-Erkrankungen.",
+        "research_status": "Klinisch (Phase 3 laufend, noch nicht zugelassen)",
+        "references": [
+            {"author": "Jastreboff A M, et al.", "journal": "New England Journal of Medicine", "year": 2023, "identifier": "PMID: 37733238 (doi:10.1056/NEJMoa2301972)", "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2301972"},
+            {"author": "Sanyal A J, et al.", "journal": "Nature Medicine", "year": 2024, "identifier": "doi:10.1038/s41591-024-02931-2", "url": "https://www.nature.com/articles/s41591-024-02931-2"},
+            {"author": "Coskun T, et al.", "journal": "Cell Metabolism", "year": 2022, "identifier": "PMID: 35985340 (doi:10.1016/j.cmet.2022.07.014)", "url": "https://pubmed.ncbi.nlm.nih.gov/35985340/"}
+        ]
+    },
+
     "epithalon": {
         "id": "epithalon",
         "research_class": "Longevity / Neuroendocrine Bioregulator Peptide",
