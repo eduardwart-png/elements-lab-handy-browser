@@ -115,44 +115,59 @@ def add_noise(img: Image.Image, amount=9, alpha=18):
     return Image.alpha_composite(img.convert('RGBA'), noise)
 
 
-def draw_el_mark(d: ImageDraw.ImageDraw, x, y, s, dark=True):
-    """Draw the TRUE interlocking EL monogram (v3): E spine+arms fused with L's
-    vertical stroke and shared bottom bar, not two separate side-by-side blocks."""
+def draw_el_mark(d: ImageDraw.ImageDraw, x, y, s, dark=True, img=None):
+    """Draw the TRUE Eddy-approved EL monogram: traced 1:1 from the approved
+    reference image (faceted E made of three angled chevron bars with a
+    notched cut, faceted L with a leaning vertical stroke and chevron foot).
+    Coordinates below are the exact traced polygon vertices from the
+    reference logo, normalized to a 1200x1080 box and scaled to (x,y,s).
+    Pass `img` (the RGBA image `d` draws on) to properly punch the small
+    transparent notch hole in the E; without it the hole is skipped."""
     ink_e = rgba(OFF_WHITE, 255) if dark else rgba(GRAPHITE, 255)
     ink_l = rgba(PETROL, 255)
-    bar = s * 0.20
-    r = max(2, int(bar * 0.16))
 
-    d.rounded_rectangle([x, y, x + bar, y + s], radius=r, fill=ink_e)
-    d.rounded_rectangle([x, y, x + s * 0.70, y + bar], radius=r, fill=ink_e)
-    mid_y = y + s / 2 - bar / 2
-    d.rounded_rectangle([x, mid_y, x + s * 0.52, mid_y + bar], radius=r, fill=ink_e)
+    REF_W, REF_H = 1200.0, 1080.0
+    e_poly = [(583,79),(225,307),(227,801),(553,1022),(660,946),(344,739),(336,631),(572,473),(577,342),(344,475),(338,377),(583,214)]
+    l_poly = [(715,136),(603,215),(604,870),(661,917),(960,724),(948,587),(718,726)]
+    hole_poly = [(576,604),(568,600),(388,718),(384,730),(470,791),(487,790),(575,726)]
 
-    l_x = x + s * 0.52
-    d.rounded_rectangle([l_x, y, l_x + bar, y + s], radius=r, fill=ink_l)
+    def to_canvas(poly):
+        return [(x + (px / REF_W) * s, y + (py / REF_H) * s) for px, py in poly]
 
-    bottom_y = y + s - bar
-    split_x = x + s * 0.52
-    d.rounded_rectangle([x, bottom_y, split_x + bar, y + s], radius=r, fill=ink_e)
-    d.rounded_rectangle([split_x, bottom_y, x + s, y + s], radius=r, fill=ink_l)
+    d.polygon(to_canvas(e_poly), fill=ink_e)
+    d.polygon(to_canvas(l_poly), fill=ink_l)
+
+    if img is not None:
+        # Punch the notch hole as true transparency (works regardless of the
+        # underlying background — logo canvas, label panel, box front, etc.)
+        hole_canvas = to_canvas(hole_poly)
+        mask = Image.new('L', img.size, 0)
+        ImageDraw.Draw(mask).polygon(hole_canvas, fill=255)
+        clear = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        img.paste(clear, (0, 0), mask)
+    else:
+        d.polygon(to_canvas(hole_poly), fill=rgba(OFF_WHITE, 255))
 
 
 def el_mark_svg_path(s=100):
-    bar = s * 0.20
-    r = round(bar * 0.16, 2)
-    l_x = s * 0.52
-    mid_y = s / 2 - bar / 2
-    bottom_y = s - bar
-    split_x = s * 0.52
-    parts = [
-        f'<rect x="0" y="0" width="{bar:.2f}" height="{s:.2f}" rx="{r}" fill="{{e}}"/>',
-        f'<rect x="0" y="0" width="{s*0.70:.2f}" height="{bar:.2f}" rx="{r}" fill="{{e}}"/>',
-        f'<rect x="0" y="{mid_y:.2f}" width="{s*0.52:.2f}" height="{bar:.2f}" rx="{r}" fill="{{e}}"/>',
-        f'<rect x="{l_x:.2f}" y="0" width="{bar:.2f}" height="{s:.2f}" rx="{r}" fill="{{l}}"/>',
-        f'<rect x="0" y="{bottom_y:.2f}" width="{split_x+bar:.2f}" height="{bar:.2f}" rx="{r}" fill="{{e}}"/>',
-        f'<rect x="{split_x:.2f}" y="{bottom_y:.2f}" width="{s-split_x:.2f}" height="{bar:.2f}" rx="{r}" fill="{{l}}"/>',
-    ]
-    return '\n'.join(parts)
+    """SVG path data for the traced EL monogram (two colored polygons + a notch
+    hole), scaled into a 0..s coordinate box. {e} and {l} are format placeholders
+    for the two fill colors."""
+    REF_W, REF_H = 1200.0, 1080.0
+    e_poly = [(583,79),(225,307),(227,801),(553,1022),(660,946),(344,739),(336,631),(572,473),(577,342),(344,475),(338,377),(583,214)]
+    l_poly = [(715,136),(603,215),(604,870),(661,917),(960,724),(948,587),(718,726)]
+    hole_poly = [(576,604),(568,600),(388,718),(384,730),(470,791),(487,790),(575,726)]
+
+    def pts(poly):
+        return ' '.join(f'{(px/REF_W)*s:.2f},{(py/REF_H)*s:.2f}' for px, py in poly)
+
+    e_id = f'elmaske{int(s*1000)}'
+    return (
+        f'<defs><mask id="{e_id}"><rect x="0" y="0" width="{s:.2f}" height="{s:.2f}" fill="white"/>'
+        f'<polygon points="{pts(hole_poly)}" fill="black"/></mask></defs>'
+        f'<polygon points="{pts(e_poly)}" fill="{{e}}" mask="url(#{e_id})"/>'
+        f'<polygon points="{pts(l_poly)}" fill="{{l}}"/>'
+    )
 
 
 def logo_svg(kind='primary', dark=False):
@@ -215,12 +230,12 @@ def logo_png(path: Path, kind='primary', dark=False):
 
     if kind == 'icon':
         mx, my, ms = 20 * scale, 20 * scale, 100 * scale
-        draw_el_mark(d, mx, my, ms, dark=dark)
+        draw_el_mark(d, mx, my, ms, dark=dark, img=img)
     elif kind == 'secondary':
         ms = 100 * scale
         mx = (size[0] - ms) / 2
         my = 20 * scale
-        draw_el_mark(d, mx, my, ms, dark=dark)
+        draw_el_mark(d, mx, my, ms, dark=dark, img=img)
         text_center(d, (size[0] // 2, int(182 * scale)), 'ELEMENTS', font(int(30 * scale), True), ink)
         text_center(d, (size[0] // 2, int(216 * scale)), 'LABS', font(int(30 * scale), True), ink)
     elif kind == 'badge':
@@ -228,12 +243,12 @@ def logo_png(path: Path, kind='primary', dark=False):
         mx = (size[0] - ms) / 2
         my = 56 * scale
         d.ellipse([size[0] * 0.5 - 128 * scale, size[1] * 0.5 - 128 * scale, size[0] * 0.5 + 128 * scale, size[1] * 0.5 + 128 * scale], outline=rgba(PETROL, 255), width=max(2, int(2 * scale)))
-        draw_el_mark(d, mx, my, ms, dark=dark)
+        draw_el_mark(d, mx, my, ms, dark=dark, img=img)
         text_center(d, (size[0] // 2, int(206 * scale)), 'ELEMENTS', font(int(19 * scale), True), ink)
         text_center(d, (size[0] // 2, int(230 * scale)), 'LABS', font(int(19 * scale), True), ink)
     else:
         mx, my, ms = 26 * scale, 30 * scale, 100 * scale
-        draw_el_mark(d, mx, my, ms, dark=dark)
+        draw_el_mark(d, mx, my, ms, dark=dark, img=img)
         d.text((166 * scale, 46 * scale), 'ELEMENTS', font=font(int(40 * scale), True), fill=ink)
         d.text((166 * scale, 90 * scale), 'LABS', font=font(int(40 * scale), True), fill=ink)
 
@@ -278,7 +293,7 @@ def build_continuous_label(product, w, h):
 
     pad = int(w * 0.09)
     mark_s = int(h * 0.15)
-    draw_el_mark(d, pad, int(h * 0.09), mark_s, dark=False)
+    draw_el_mark(d, pad, int(h * 0.09), mark_s, dark=False, img=label)
     d.text((pad + mark_s * 1.30, int(h * 0.095)), 'ELEMENTS LABS', font=font(int(h * 0.075), True), fill=rgba(GRAPHITE, 255))
     d.text((pad + mark_s * 1.30, int(h * 0.095) + int(h * 0.082)), product['code'], font=font(int(h * 0.045), False, True), fill=rgba(MUTED, 255))
 
