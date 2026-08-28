@@ -1,0 +1,26 @@
+{
+  "file": "_standalone.html",
+  "failures": [],
+  "evidence": [
+    "Product hard check PASS: 13/13 names, concentrations, prices, batches, codes, image loads.",
+    "Catalog interactions PASS: search and sort.",
+    "Public route scan PASS: banned visible markers 0; old atom/DNA/molecule references 0.",
+    "Product detail PASS: 13/13 complete and no banned public markers.",
+    "Batch PASS: 13/13 batch IDs resolve with QR.",
+    "Cart PASS: add, remove, quantity, total.",
+    "Responsive PASS: 390, 430, 768, 1440, 1920 and key mobile routes.",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\desktop-home.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\hero-close-up.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\mobile-home.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\product-grid.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\product-detail-bpc-157.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\vial-close-up.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\product-detail-epithalon.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\group-product-shot.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\packaging.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\quality.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\batch-lookup.png",
+    "screenshot: C:\\Users\\eduar\\elements-lab-flagship\\evidence\\screenshots\\cart.png"
+  ],
+  "consoleErrors": []
+}

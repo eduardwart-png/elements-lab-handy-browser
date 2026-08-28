@@ -1,0 +1,16 @@
+{
+  "file": "_standalone.html",
+  "failures": [],
+  "evidence": [
+    "_standalone.html: Produktkatalog geprüft: 13 Karten, 13 JSON-Produkte, alle erwarteten Namen/Konzentrationen/Preise/Batches/Codes sichtbar.",
+    "_standalone.html: Search/Filter geprüft: Name, Batch, Kategorie, Preis auf-/absteigend.",
+    "_standalone.html: Hash-Routing für alle 11 Hauptseiten rendert.",
+    "_standalone.html: COA geprüft: alle 13 Details mit DEMO / SAMPLE REPORT.",
+    "_standalone.html: Batch Lookup/QR: 13 Batch-Hashes mit passendem Produkt, geladenem QR als data URL.",
+    "_standalone.html: Batch-Eingabe und Sample-Button funktionieren.",
+    "_standalone.html: Cart geprüft: Add, Remove, Quantity, Total, Checkout-Hinweis, Leer.",
+    "_standalone.html: Mobile/Desktop Overflow geprüft: 390–1920 px, keine horizontalen Überläufe."
+  ],
+  "errorCount": 0,
+  "consoleErrors": []
+}
