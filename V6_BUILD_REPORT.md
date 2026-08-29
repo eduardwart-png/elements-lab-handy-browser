@@ -134,3 +134,43 @@ assets/scenes/                  — 6 scene images
 img/                            — 13 QR code PNGs (one per V6 batch)
 qa/                             — CDP production QA + static check scripts
 ```
+
+---
+
+## V7 Competitor-Upgrade Addendum
+
+**Branch:** flagship-v6-enterprise  
+**Build date:** 2026-08-29  
+**Source:** BUILD_BRIEF_V7_COMPETITOR_UPGRADE.md (glowingpeptides.com analysis)  
+**Constraint:** No brand changes, no LEGAL_HOLD impact, no invented data.
+
+| # | Feature | Status | Notes |
+|---|---|---|---|
+| F1 | 18+ Age-Gate (P0) | **COMPLETE** | Real technical block — overlay with `position:fixed;inset:0;z-index:9000`. Ja/Nein + Pflicht-Checkbox + disabled Confirm button. `localStorage` key `elementsAgeGateConfirmed`. Inline `<script>` prevents flash for returning visitors. Works in `index.html` AND `_standalone.html`. |
+| F2 | Produktseiten-Tabs | **COMPLETE** | 7 tabs per detail page: Beschreibung, Labortest/COA, Anwendungsbereiche, Lagerung, Haftungsausschluss, Versand & Rückgabe, FAQ. Content sourced from Research Profiles; COA tab honest NOT RELEASED. No dosing/reconstitution instructions. |
+| F3 | Trust-Badges am Produkt | **COMPLETE** | Icon row on every detail page: "Versand aus Europa", "Batch-verifiziert", "Qualitätskontrolle", "24/7 Kundendienst". |
+| F4 | Research-Only Reminder am CTA | **COMPLETE** | Warning banner directly under Add to Cart on every detail page: "Nur für Forschungszwecke — keine Anwendung am Menschen." |
+| F5 | Wissensbereich / Research Hub | **COMPLETE** | Route `#info` (alias `#research-hub`). 5 knowledge cards: Was sind Peptide?, Verwendungszweck & Abgrenzung, Qualität & Analytik (COA/HPLC/SDS), Gesetzeslage & Verantwortung, Sicherer Umgang & Lagerung. Nav link "Research Library" added before About. 6 compound profile preview cards below. |
+| F6 | MOTS-C Variantenauswahl | **COMPLETE** | Single card in grid with 10/20/40mg variant buttons (price + image + cart-target switching). Detail page shows variant button row; each variant button navigates to correct `#product=mots-c-XY` route. Grid deduplication via `renderProductGrid()`. |
+
+### QA Results — V7
+
+| Check | Result |
+|---|---|
+| `python build_elements_site.py` | PASS — builds without errors |
+| `qa/standalone_static_check.py` | PASS — `products=13, images/QR inlined, banned shell markers=0` |
+| LEGAL_HOLD (semaglutide/tirzepatide/retatrutide) | PASS — absent from index.html AND _standalone.html |
+| Age gate in index.html | PASS — overlay HTML + inline localStorage check present |
+| Age gate in _standalone.html | PASS — overlay HTML + initAgeGate IIFE present |
+| Research Library nav link | PASS — `href="#info"` in both files |
+| No invented COA data | PASS — COA tab shows explicit NOT RELEASED status |
+| No dosing/reconstitution instructions | PASS — storage tab has generic peptide handling only |
+| No Heilversprechen | PASS — all tab content is research-use-only framing |
+| V6 prices/batches unchanged | PASS — PRODUCTS array not modified |
+
+### Compliance Delta (V6 → V7)
+
+- Age gate added: **stronger** — technical content block, not cosmetic
+- COA tab: **honest** — shows NOT RELEASED gate status, not fake lab reports
+- Research-only reminders: **increased** — CTA-adjacent on every product
+- Research Hub: **new** — background knowledge without treatment/dosing claims
