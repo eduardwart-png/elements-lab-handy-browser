@@ -9,12 +9,31 @@
   <style>@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/space-grotesk-0.woff2') format('woff2')}@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500;font-display:swap;src:url('assets/fonts/space-grotesk-1.woff2') format('woff2')}@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:600;font-display:swap;src:url('assets/fonts/space-grotesk-2.woff2') format('woff2')}@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:700;font-display:swap;src:url('assets/fonts/space-grotesk-3.woff2') format('woff2')}</style><link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div id="ageGate" class="age-gate-overlay">
+    <div class="age-gate-box">
+      <div class="eyebrow">Elements Labs</div>
+      <h2>Bevor Sie fortfahren</h2>
+      <p class="lead">Diese Website richtet sich ausschließlich an volljährige Fachpersonen aus dem Bereich der wissenschaftlichen Forschung.</p>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 20px">Sind Sie 18 Jahre oder älter?</p>
+      <div class="age-gate-btns">
+        <button id="ageYes">Ja, ich bin 18+</button>
+        <button id="ageNo">Nein</button>
+      </div>
+      <label class="age-gate-checkbox">
+        <input type="checkbox" id="ageCheckbox">
+        <span>Ich bestätige, dass die auf dieser Website angebotenen Produkte ausschließlich für wissenschaftliche Forschungszwecke bestimmt sind und weder für den menschlichen oder tierischen Verzehr noch für medizinische, diagnostische oder therapeutische Zwecke vorgesehen sind.</span>
+      </label>
+      <button id="ageConfirmBtn" disabled>Bestätigen und fortfahren</button>
+      <div class="age-gate-blocked" id="ageBlockedMsg">Diese Website ist nur für volljährige Nutzer im Forschungskontext zugänglich.</div>
+    </div>
+  </div>
+  <script>if(localStorage.getItem('elementsAgeGateConfirmed')==='1'){document.getElementById('ageGate').classList.add('hidden');}</script>
   <a href="#app" class="skip-link">Zum Hauptinhalt springen</a>
   <header class="site-header" id="top">
     <a class="brand" href="#home" aria-label="ELEMENTS LABS Home"><img class="brand-desktop" src="assets/logos/el-primary-light.svg" alt="ELEMENTS LABS"><img class="brand-mobile" src="assets/logos/el-icon-light.svg" alt="ELEMENTS LABS"></a>
     <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav">Menu</button>
     <nav id="mainNav" class="main-nav" aria-label="Hauptnavigation">
-      <a href="#products">Products</a><a href="#quality">Quality</a><a href="#batch-lookup">Batch Lookup</a><a href="#certificates">Certificates</a><a href="#about">About</a><a href="#faq">FAQ</a>
+      <a href="#products">Products</a><a href="#quality">Quality</a><a href="#batch-lookup">Batch Lookup</a><a href="#certificates">Certificates</a><a href="#info">Research Library</a><a href="#about">About</a><a href="#faq">FAQ</a>
     </nav>
     <div class="header-actions"><button class="search-open" data-action="focus-search">Search</button><a class="cart-link" href="#cart">Cart <span id="cartCount">0</span></a></div>
   </header>

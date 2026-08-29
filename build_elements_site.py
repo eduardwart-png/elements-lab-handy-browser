@@ -1595,8 +1595,14 @@ def build_html(products, inline=False):
     fonts_css = font_face_css(inline)
     pdata = json.dumps(products, ensure_ascii=False, separators=(',', ':'))
     rdata = json.dumps(RESEARCH_PROFILES, ensure_ascii=False, separators=(',', ':'))
-    css_part = f'<style>{fonts_css}{CSS}</style>' if inline else f'<style>{fonts_css}</style><link rel="stylesheet" href="styles.css" />'
-    js_part = f'<script>{APP}</script>' if inline else '<script src="app.js"></script>'
+    if inline:
+        css_text = (ROOT / 'styles.css').read_text('utf-8')
+        js_text = (ROOT / 'app.js').read_text('utf-8')
+        css_part = f'<style>{fonts_css}{css_text}</style>'
+        js_part = f'<script>{js_text}</script>'
+    else:
+        css_part = f'<style>{fonts_css}</style><link rel="stylesheet" href="styles.css" />'
+        js_part = '<script src="app.js"></script>'
     return dedent(f'''<!doctype html>
 <html lang="de">
 <head>
@@ -1608,12 +1614,31 @@ def build_html(products, inline=False):
   {css_part}
 </head>
 <body>
+  <div id="ageGate" class="age-gate-overlay">
+    <div class="age-gate-box">
+      <div class="eyebrow">Elements Labs</div>
+      <h2>Bevor Sie fortfahren</h2>
+      <p class="lead">Diese Website richtet sich ausschließlich an volljährige Fachpersonen aus dem Bereich der wissenschaftlichen Forschung.</p>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 20px">Sind Sie 18 Jahre oder älter?</p>
+      <div class="age-gate-btns">
+        <button id="ageYes">Ja, ich bin 18+</button>
+        <button id="ageNo">Nein</button>
+      </div>
+      <label class="age-gate-checkbox">
+        <input type="checkbox" id="ageCheckbox">
+        <span>Ich bestätige, dass die auf dieser Website angebotenen Produkte ausschließlich für wissenschaftliche Forschungszwecke bestimmt sind und weder für den menschlichen oder tierischen Verzehr noch für medizinische, diagnostische oder therapeutische Zwecke vorgesehen sind.</span>
+      </label>
+      <button id="ageConfirmBtn" disabled>Bestätigen und fortfahren</button>
+      <div class="age-gate-blocked" id="ageBlockedMsg">Diese Website ist nur für volljährige Nutzer im Forschungskontext zugänglich.</div>
+    </div>
+  </div>
+  <script>if(localStorage.getItem('elementsAgeGateConfirmed')==='1'){{document.getElementById('ageGate').classList.add('hidden');}}</script>
   <a href="#app" class="skip-link">Zum Hauptinhalt springen</a>
   <header class="site-header" id="top">
     <a class="brand" href="#home" aria-label="ELEMENTS LABS Home"><img class="brand-desktop" src="{logo}" alt="ELEMENTS LABS"><img class="brand-mobile" src="{icon_logo}" alt="ELEMENTS LABS"></a>
     <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav">Menu</button>
     <nav id="mainNav" class="main-nav" aria-label="Hauptnavigation">
-      <a href="#products">Products</a><a href="#quality">Quality</a><a href="#batch-lookup">Batch Lookup</a><a href="#certificates">Certificates</a><a href="#about">About</a><a href="#faq">FAQ</a>
+      <a href="#products">Products</a><a href="#quality">Quality</a><a href="#batch-lookup">Batch Lookup</a><a href="#certificates">Certificates</a><a href="#info">Research Library</a><a href="#about">About</a><a href="#faq">FAQ</a>
     </nav>
     <div class="header-actions"><button class="search-open" data-action="focus-search">Search</button><a class="cart-link" href="#cart">Cart <span id="cartCount">0</span></a></div>
   </header>
@@ -1648,8 +1673,7 @@ def main():
     write_logos()
     product_assets()
     scene_assets()
-    (ROOT / 'styles.css').write_text(CSS, encoding='utf-8')
-    (ROOT / 'app.js').write_text(APP, encoding='utf-8')
+    # V7: styles.css and app.js are maintained externally with V7 additions — do not overwrite
     (ROOT / 'index.html').write_text(build_html(PRODUCTS, inline=False), encoding='utf-8')
     (ROOT / '_standalone.html').write_text(build_html(standalone_products(), inline=True), encoding='utf-8')
     (ROOT / 'qa' / 'cdp_production_qa.js').write_text(QA_JS, encoding='utf-8')
