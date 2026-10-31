@@ -20,6 +20,8 @@ RUNTIME = ROOT / 'runtime'
 PORT = int(os.environ.get('ELEMENTS_PORT', '8766'))
 ALLOWED_BOTS = {'elementslabs_shop_bot', 'elementslabsshop_bot', 'elementslabstest_bot'}  # Live-Bot des Inhabers und gemeinsamer Test-Bot
 STOP = threading.Event()
+ROLE = os.environ.get('ELEMENTS_ROLE', 'primary')   # 'standby' = Reserveknoten: uebernimmt die feste Adresse nur bei Ausfall des Hauptknotens
+STANDBY = {'fail': 0, 'active': False}
 
 
 class TelegramAuthError(RuntimeError):
@@ -48,6 +50,17 @@ def tunnel_url(line):
         if value != 'https://api.trycloudflare.com':
             return value
     return ''
+
+
+def front_node(front):
+    """Name des Knotens, der hinter der festen Adresse antwortet (None = nicht erreichbar/unbrauchbar)."""
+    try:
+        request = urllib.request.Request(front.rstrip('/') + '/health', headers={'User-Agent': 'ElementsLive/1.0'})
+        with urllib.request.urlopen(request, timeout=10) as response:
+            value = json.load(response)
+        return value.get('node', 'primary') if value.get('status') == 'ok' and value.get('products', 0) >= 25 else None
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+        return None
 
 
 def healthy(origin):
@@ -188,8 +201,10 @@ def start_stack(env, token, bot_name):
             raise RuntimeError('Shop did not become reachable')
         if STOP.is_set():
             raise RuntimeError('Startup cancelled')
-        public = publish_front(url)
         atomic_text(RUNTIME / 'tunnel_origin.txt', url + '\n')
+        if ROLE == 'standby':
+            return processes, url
+        public = publish_front(url)
         atomic_text(RUNTIME / 'origin.txt', public + '\n')
         api(token, 'setChatMenuButton', {'menu_button': {'type': 'web_app', 'text': '🛒 Shop öffnen', 'web_app': {'url': public + '/'}}})
         for _attempt in range(8):  # Telegram uebernimmt den Menuknopf nicht immer sofort
@@ -204,6 +219,38 @@ def start_stack(env, token, bot_name):
     except Exception:
         stop_stack(processes)
         raise
+
+
+def activate_front(env, token, processes, url):
+    """Reserveknoten uebernimmt: feste Adresse auf eigenen Tunnel, Menueknopf, Bot starten."""
+    public = publish_front(url)
+    if not FRONT['url']:
+        return False
+    atomic_text(RUNTIME / 'origin.txt', public + '\n')
+    api(token, 'setChatMenuButton', {'menu_button': {'type': 'web_app', 'text': '🛒 Shop öffnen', 'web_app': {'url': public + '/'}}})
+    if not processes.get('bot') or processes['bot'].poll() is not None:
+        processes['bot'] = subprocess.Popen([sys.executable, '-u', str(ROOT / 'bot.py')], env=env)
+    STANDBY['active'] = True
+    print('TAKEOVER: Reserveknoten ist jetzt aktiv', flush=True)
+    return True
+
+
+def standby_tick(env, token, processes, url):
+    node = front_node(front_url()) if front_url() else None
+    own = env.get('ELEMENTS_NODE', 'standby')
+    if not STANDBY['active']:
+        STANDBY['fail'] = 0 if node else STANDBY['fail'] + 1
+        if STANDBY['fail'] >= 4:        # ca. 80 s ohne funktionierende feste Adresse
+            activate_front(env, token, processes, url)
+    elif node == 'primary':             # Hauptknoten ist zurueck und hat die Adresse wieder
+        bot = processes.pop('bot', None)
+        if bot and bot.poll() is None:
+            bot.terminate()
+        STANDBY.update(active=False, fail=0)
+        print('HANDBACK: Hauptknoten aktiv, Reserveknoten wartet', flush=True)
+    elif node is None:
+        STANDBY['fail'] += 1
+    return own
 
 
 def main():
@@ -239,7 +286,8 @@ def main():
         raise TelegramAuthError('Configured token belongs to a different bot; stopped')
     env['ELEMENTS_BOT_USERNAME'] = bot_name
     awake = keep_awake()
-    subprocess.run([sys.executable, str(ROOT / 'build.py')], cwd=ROOT, check=True, env=env)
+    if ROLE != 'standby' and not os.environ.get('ELEMENTS_SKIP_BUILD'):
+        subprocess.run([sys.executable, str(ROOT / 'build.py')], cwd=ROOT, check=True, env=env)
     restarts = 0
     try:
         while not STOP.is_set():
@@ -253,6 +301,8 @@ def main():
                 failures = 0
                 while not STOP.wait(20):
                     reason, failures = restart_reason(processes, url, failures=failures)
+                    if ROLE == 'standby' and not reason:
+                        standby_tick(env, token, processes, url)
                     if reason:
                         if processes.get('bot') and processes['bot'].poll() == 2:
                             raise TelegramAuthError('Bot access refused')
